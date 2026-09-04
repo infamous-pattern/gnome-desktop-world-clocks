@@ -21,6 +21,10 @@ The updated installed JavaScript requires a fresh GNOME session before the owner
 
 The extension now supports four independent groups with up to ten clocks each. The Groups page selects the count and the group edited by Clocks/Appearance. Group 1 uses the existing settings path; hidden groups retain their configuration. The automated suite covers 40 clocks, shared scheduling, independent settings, group removal/restoration, and preferences image cancellation. A physical login and four-corner check are still required.
 
+## Subsequent desktop feedback
+
+The owner confirmed that four groups appear and an appearance edit affects only the selected group. The Inline layout now adds three extra spaces after the combined clock name/abbreviation, before the dash and time. The full GNOME 50.4 suite passes; the visual spacing change awaits a fresh desktop login. Background checks remain pending.
+
 ## Still pending
 
 - Clock add/remove/reorder, description fallback, per-clock color and abbreviation controls.

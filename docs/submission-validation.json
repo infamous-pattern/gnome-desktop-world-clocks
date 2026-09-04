@@ -1,6 +1,6 @@
 {
   "date": "2026-09-04",
-  "archive_sha256": "91f9b07acd2faa9329102f3a7d3fc1499e2fafd0431f02c5cede845c03fc3eee",
+  "archive_sha256": "e29075e88430f1a354badabcc25b31ffd5b4ac169eb6fc6867672f22eb333c24",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
     "extension.js": "1269acd041c0539a29b8abcfda51d5cc4ad92804459dcea595ffcb7ff0a196cd",
@@ -13,7 +13,7 @@
     "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f2e4ae3562992146e88e661e0952687e71f890d88849b51cca8ef1715097710c",
     "shared/groups.js": "498175d4bfa2ecabc6327abb1e3a377bcb33af0c5a9b20dff0bb527aaded5afe",
     "shared/model.js": "2cb8981854fc7ee8d5918fdca3c4d0c4de5ed26d1c4377e6c0ff2284ca975a25",
-    "shell/controller.js": "1feb24f2f788285dc1a963277d95b5a6b7500091b5c6af180112da512130571a",
+    "shell/controller.js": "55f75efb940c9274d9fc2b675e13e5ac5b22cc3d3fd5fa73656be71f2c08cdde",
     "shell/manager.js": "2d7b0e2ebe4b62da9ec90e26b6d32575f4b99a664b1379b0d376a31bad384974"
   },
   "validation": {
@@ -31,21 +31,21 @@
       "environment": "Fedora 43 rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Four-group build tested; image tests included only in the full 50.4 run."
+      "scope_note": "Four-group build before the three-space Inline gap adjustment."
     },
     {
       "version": "50.4",
       "environment": "Fedora 44 isolated Wayland session",
       "mode": "full automated suite",
       "result": "pass",
-      "scope_note": "Four-group build tested; image tests included only in the full 50.4 run."
+      "scope_note": "Full suite passed after the three-space Inline gap adjustment."
     },
     {
       "version": "51.beta",
       "environment": "Fedora development rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Four-group build tested; image tests included only in the full 50.4 run."
+      "scope_note": "Four-group build before the three-space Inline gap adjustment."
     }
   ],
   "remaining": [
@@ -55,5 +55,5 @@
     "Physical-session checks",
     "Final GNOME 51 release validation"
   ],
-  "follow_up": "2026-09-04: four independent groups, full GNOME 50.4 suite and 49.9/51.beta core suites pass; lint, 25 model checks, 33 adversarial checks, npm audit and directory secret scan pass."
+  "follow_up": "2026-09-04: add three spaces after the combined clock name/abbreviation in Inline layout; lint and full GNOME 50.4 suite pass. Earlier model, security, and 49.9/51.beta core checks apply to the preceding four-group build."
 }

@@ -161,7 +161,7 @@ export class ClockController {
         this._lastMinute = Math.floor(now.to_unix() / 60);
         for (const item of this._items) {
             const text = clockText(item.record, item.zone, now, this._options);
-            this._setText(item.name, this._layout === 'classic' ? `${text.name} – ${text.time}` : text.name);
+            this._setText(item.name, this._layout === 'classic' ? `${text.name}    – ${text.time}` : text.name);
             if (item.time)
                 this._setText(item.time, text.time);
             const day = text.difference
