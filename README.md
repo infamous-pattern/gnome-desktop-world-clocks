@@ -12,7 +12,9 @@ Up to ten customizable world clocks directly on the GNOME desktop, above the wal
 
 The core suite exercises real Shell and native preferences, including layouts, timers, colors, clock editing, and cleanup. Container image tests are excluded because the nested image-decoder sandbox cannot run under this host’s container restrictions. Full compatibility is not yet verified on GNOME 49 and 51. See [validation and remaining checks](docs/DEVELOPMENT.md).
 
-![Native desktop clocks](docs/desktop.png)
+![Native desktop clocks — close-up with text shadow disabled](docs/desktop-detail.png)
+
+Native desktop detail, shown with text shadow disabled for clarity. [View the full desktop screenshot](docs/desktop.png).
 
 ## Features
 

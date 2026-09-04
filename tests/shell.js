@@ -119,6 +119,14 @@ export async function run() {
         const [captured] = await new Shell.Screenshot().screenshot(false, stream);
         assert(captured, 'Desktop screenshot captured successfully');
         stream.close(null);
+        // Keep the README detail at native pixel size on typical GitHub pages.
+        settings.set_boolean('text-shadow', false);
+        await Scripting.sleep(200);
+        const detailStream = Gio.File.new_for_path(`${resultDir}/desktop-detail.png`).replace(null, false, Gio.FileCreateFlags.NONE, null);
+        const [detailCaptured] = await new Shell.Screenshot().screenshot_area(0, 32, 480, 384, detailStream);
+        assert(detailCaptured, 'Desktop detail screenshot captured successfully');
+        detailStream.close(null);
+        settings.reset('text-shadow');
     }
     const process = Gio.Subprocess.new(['gjs', '-m', `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/tests/prefs.js`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
     const [, output, errors] = await new Promise((resolve, reject) => {
