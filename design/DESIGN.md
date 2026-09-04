@@ -15,6 +15,8 @@ User-facing name: **Desktop World Clocks**.
 4. Provide a searchable chooser for all fonts installed and available to GNOME, plus shared font size and clock opacity (0–100%). Offer a global font color with optional per-clock color overrides. Each clock defaults to “Use global font color”; changing the global color affects only clocks that inherit it. Restoring inheritance discards that clock’s override. Opacity applies to the complete clock text, including its shadow, independently of color.
 5. Derive all clock readings from one synchronized system clock. Apply each selected zone's daylight-saving and historical rule changes through the system time-zone database.
 6. Support nearby NTP sources and a specified local/custom NTP server, with truthful synchronization status.
+7. Offer five layouts: inline, aligned columns, stacked, two-column grid, and horizontal strip. The grid collapses when space is limited; the strip wraps as needed to keep clocks visible.
+8. Provide transparent, solid-color, or user-selected image backgrounds for the clock group. Transparent is the default. Backgrounds do not change the desktop wallpaper and remain independent of text opacity. Images use centered, cover-style cropping.
 
 ## Preview interactions
 
@@ -22,7 +24,8 @@ User-facing name: **Desktop World Clocks**.
 - Time is live device time; displayed abbreviations follow the current date, rather than copying the reference's seasonal abbreviations.
 - Add, rename, change zone, remove, and reorder clocks. Adding is disabled at ten.
 - Searchable installed-font chooser, 14–48 px size, 0–100% clock opacity, global color and per-clock color overrides, 12/24-hour display, optional seconds, optional date difference relative to the device, and text shadow.
-- Inline, aligned-column, and stacked layouts; four desktop corner anchors.
+- Inline, aligned-column, stacked, two-column grid, and wrapping horizontal-strip layouts; four desktop corner anchors.
+- Transparent, solid-color, or local-image clock backgrounds. PNG, JPG, and WebP files up to 10 MB are supported in the preview. Files stay in browser memory for the current page session and are not uploaded or committed. Switching modes retains the chosen color/image for this session.
 - Source selection is only a preview preference. No network requests or system changes occur.
 
 The embedded list contains 597 system time-zone identifiers and aliases captured on 2026-09-04. The preview filters out entries unsupported by the browser's time-zone engine. This snapshot is not a replacement for a native, dynamically enumerated system zone database. The prototype font list was refreshed from all installed font families on the development GNOME system; browsers can fall back when a requested font is unavailable.
@@ -48,7 +51,7 @@ The finished product must distinguish synchronized, unsynchronized, unavailable,
 - Initial development target: GNOME Shell 50, observed locally as 50.4. Other versions need explicit compatibility testing before being declared supported.
 - Native preferences should use GTK/libadwaita with a system font chooser and searchable time-zone picker. Enumerate fonts dynamically from the GNOME font system, including user-installed and system-wide fonts; do not ship the preview’s font snapshot as a fixed production list.
 - The overlay should sit above wallpaper and below normal application windows, without intercepting ordinary desktop input.
-- Persist ordered clock records and appearance in GSettings.
+- Persist ordered clock records and appearance in GSettings. In the extension, use a native file chooser for backgrounds and persist a local image reference; handle missing or unreadable files with a clear fallback.
 - Use one update timer; release timers, signals, actors, and service resources when disabled.
 - Handle session lock, Overview, multiple monitors, workspace changes, scaling, and screen size changes explicitly during implementation.
 - Display ordinary zone abbreviations where available, falling back to a readable UTC/GMT offset. Labels remain separate from zone rules.
@@ -57,13 +60,13 @@ The finished product must distinguish synchronized, unsynchronized, unavailable,
 
 - Shared font, size, and opacity are selected; per-clock color overrides are now required.
 - Prefer inline rows or aligned time columns?
-- Add drag-to-position, monitor selection, or a subtle background panel?
+- Add drag-to-position or monitor selection? Background modes are now required.
 - Should next/previous-day indicators be enabled by default?
 - Native system-settings handoff or authenticated time-source configuration helper?
 
 ## Preview verification
 
-The preview was opened and visually inspected in a browser. Additions to ten clocks, the disabled add control at capacity, custom descriptions, quarter-hour zones, font changes, 12-hour time, aligned layout, and date differences were exercised. The desktop layout and narrow stacked presentation were inspected. The updated font selector was verified against 505 installed font families. Font filtering, font selection, opacity, per-clock colors surviving global color changes, and restoring global color inheritance were also verified. These checks validate the design prototype, not GNOME integration or NTP accuracy.
+The preview was opened and visually inspected in a browser. Additions to ten clocks, the disabled add control at capacity, custom descriptions, quarter-hour zones, font changes, 12-hour time, aligned layout, and date differences were exercised. The desktop layout and narrow stacked presentation were inspected. The updated font selector was verified against 505 installed font families. Font filtering, font selection, opacity, per-clock colors surviving global color changes, and restoring global color inheritance were also verified. The two-column grid and wrapping horizontal strip were visually inspected, including the grid collapsing at a narrow width. Solid-color selection, local PNG background loading, and switching back to transparency were exercised. These checks validate the design prototype, not GNOME integration or NTP accuracy.
 
 ## References
 

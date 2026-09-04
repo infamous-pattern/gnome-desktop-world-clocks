@@ -23,6 +23,8 @@
     #worldclock-concept .wc-leaf:nth-child(3) { right:80px; top:57%; transform:rotate(12deg); }
     #worldclock-concept .wc-leaf:nth-child(4) { right:-70px; top:69%; transform:rotate(-18deg); }
     #worldclock-concept .wc-leaf:nth-child(5) { right:130px; top:78%; transform:rotate(35deg); }
+    #worldclock-concept .wc-clock-surface { position:relative; width:100%; min-width:0; border-radius:12px; background-position:center; background-size:cover; }
+    #worldclock-concept .wc-clock-surface[data-background="solid"],#worldclock-concept .wc-clock-surface[data-background="image"] { padding:18px; }
     #worldclock-concept .wc-clocks { max-width:100%; width:100%; color:#fff; font-size:26px; line-height:1.65; text-shadow:0 2px 5px #000b; }
     #worldclock-concept .wc-clock { overflow-wrap:anywhere; }
     #worldclock-concept .wc-clock time { font-variant-numeric:tabular-nums; white-space:nowrap; }
@@ -33,6 +35,17 @@
     #worldclock-concept .wc-clocks[data-arrangement="stacked"] .wc-name { font-size:.64em; opacity:.85; }
     #worldclock-concept .wc-clocks[data-arrangement="stacked"] time { font-size:1.35em; }
     #worldclock-concept .wc-clocks[data-arrangement="stacked"] small { margin:0; }
+    #worldclock-concept .wc-clocks[data-arrangement="grid"] { display:flex; flex-wrap:wrap; gap:22px 24px; }
+    #worldclock-concept .wc-clocks[data-arrangement="grid"] .wc-clock { flex:1 1 calc(50% - 12px); min-width:min(100%,9em); display:flex; flex-direction:column; line-height:1.3; }
+    #worldclock-concept .wc-clocks[data-arrangement="grid"] .wc-name { order:1; font-size:.65em; margin-top:5px; }
+    #worldclock-concept .wc-clocks[data-arrangement="grid"] time { font-size:1.1em; white-space:normal; }
+    #worldclock-concept .wc-clocks[data-arrangement="grid"] small { order:2; margin:4px 0 0; }
+    #worldclock-concept .wc-clocks[data-arrangement="strip"] { display:flex; flex-wrap:wrap; gap:22px 24px; }
+    #worldclock-concept .wc-clocks[data-arrangement="strip"] .wc-clock { flex:0 1 auto; min-width:min(100%,7.5em); max-width:100%; display:flex; flex-direction:column; line-height:1.3; }
+    #worldclock-concept .wc-clocks[data-arrangement="strip"] .wc-name { font-size:.58em; margin-bottom:5px; }
+    #worldclock-concept .wc-clocks[data-arrangement="strip"] time { white-space:normal; }
+    #worldclock-concept .wc-clocks[data-arrangement="strip"] small { margin:4px 0 0; }
+    #worldclock-concept input[type="file"] { max-width:100%; color:var(--wc-text); font-size:12px; }
     #worldclock-concept .wc-preview-label { position:absolute; bottom:16px; left:24px; color:#d6e5dc; font-size:12px; }
     #worldclock-concept .wc-settings { min-width:0; background:var(--wc-panel); border-left:1px solid var(--wc-border); }
     #worldclock-concept .wc-tabs { display:flex; gap:4px; padding:12px; border-bottom:1px solid var(--wc-border); }
@@ -76,7 +89,7 @@
         <div class="wc-bar"><span>Activities</span><span data-top-date></span><span>● &nbsp; ◖))</span></div>
         <div class="wc-workspace">
           <div class="wc-leaves" aria-hidden="true"><div class="wc-leaf"></div><div class="wc-leaf"></div><div class="wc-leaf"></div><div class="wc-leaf"></div><div class="wc-leaf"></div></div>
-          <div class="wc-clocks" data-clocks aria-label="Your world clocks"></div>
+          <div class="wc-clock-surface" data-surface data-background="transparent"><div class="wc-clocks" data-clocks aria-label="Your world clocks"></div></div>
           <div class="wc-preview-label">Desktop preview · live device time</div>
         </div>
       </section>
@@ -104,14 +117,21 @@
           <label class="wc-field">Size <span data-size-label>26 px</span><input type="range" data-size min="14" max="48" value="26"></label>
           <label class="wc-field">Clock opacity <span data-opacity-label>100%</span><input type="range" data-opacity min="0" max="100" value="100"></label>
           <div class="wc-pair"><label class="wc-field">Global font color<input type="color" data-color value="#ffffff"></label><label class="wc-field">Time format<select data-format><option value="24">24-hour</option><option value="12">12-hour</option></select></label></div>
-          <label class="wc-field">Layout<select data-layout><option value="classic">Inline · like your reference</option><option value="aligned">Aligned time column</option><option value="stacked">Large time, label above</option></select></label>
+          <label class="wc-field">Layout<select data-layout><option value="classic">Inline · like your reference</option><option value="aligned">Aligned time column</option><option value="stacked">Large time, label above</option><option value="grid">Two-column grid</option><option value="strip">Horizontal strip · wraps to fit</option></select></label>
+          <label class="wc-field">Clock background<select data-background><option value="transparent">Transparent · show wallpaper</option><option value="solid">Solid color</option><option value="image">Choose image</option></select></label>
+          <label class="wc-field" data-background-color-field hidden>Background color<input type="color" data-background-color value="#172a24"></label>
+          <div data-background-image-field hidden>
+            <label class="wc-field">Background image<input type="file" data-background-image accept="image/png,image/jpeg,image/webp"></label>
+            <div class="wc-note" data-image-name>No image selected · PNG, JPG, or WebP, up to 10 MB.</div>
+            <div class="wc-error" data-image-error role="alert"></div>
+          </div>
           <label class="wc-field">Desktop corner<select data-position><option value="top-left">Top left</option><option value="top-right">Top right</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option></select></label>
           <hr class="wc-rule">
           <label class="wc-check"><input type="checkbox" data-abbr checked>Show time zone abbreviation</label>
           <label class="wc-check"><input type="checkbox" data-seconds>Show seconds</label>
           <label class="wc-check"><input type="checkbox" data-day>Show date difference from this device</label>
           <label class="wc-check"><input type="checkbox" data-shadow checked>Text shadow for readability</label>
-          <div class="wc-note">Font, size, and opacity apply to all clocks. Individual clock colors override the global color. Font choices come from this GNOME system; unavailable fonts use a fallback when previewed elsewhere.</div>
+          <div class="wc-note">Font, size, and text opacity apply to all clocks. Individual clock colors override the global color. Backgrounds cover the clock area; text opacity does not fade the background. Font choices come from this GNOME system; unavailable fonts use a fallback when previewed elsewhere.</div>
         </div>
         <div class="wc-pane" data-pane="sync" hidden>
           <div class="wc-status"><span class="wc-sub">Synchronization</span><strong>Preview · status unavailable</strong><span class="wc-sub">Clocks use this device’s time. NTP is not connected in this design preview.</span></div>
@@ -134,7 +154,7 @@
     const root=document.getElementById('worldclock-concept');
     const q=s=>root.querySelector(s), qa=s=>Array.from(root.querySelectorAll(s));
     const clocks=[['Los Angeles','America/Los_Angeles'],['Austin','America/Chicago'],['London','Europe/London'],['Vienna','Europe/Vienna'],['Pune','Asia/Kolkata'],['Singapore','Asia/Singapore'],['Japan','Asia/Tokyo'],['Melbourne','Australia/Melbourne']].map(([label,zone])=>({label,zone}));
-    const state={font:'Adwaita Sans',size:26,opacity:100,color:'#ffffff',format:'24',layout:'classic',position:'top-left',abbr:true,seconds:false,day:false,shadow:true};
+    const state={font:'Adwaita Sans',size:26,opacity:100,color:'#ffffff',format:'24',layout:'classic',background:'transparent',backgroundColor:'#172a24',backgroundImage:'',position:'top-left',abbr:true,seconds:false,day:false,shadow:true};
     let editing=null;
     let descriptionIsAutomatic=true;
     const locationName=zone=>zone.split('/').pop().replaceAll('_',' ');
@@ -180,6 +200,7 @@
       if(!clocks.length){const empty=document.createElement('span');empty.textContent='Add your first clock';empty.style.fontSize='18px';dest.append(empty);}
     }
     function renderStyle(){
+      const surface=q('[data-surface]');surface.dataset.background=state.background;surface.style.backgroundColor=state.background==='solid'?state.backgroundColor:'transparent';surface.style.backgroundImage=state.background==='image'&&state.backgroundImage?'url("'+state.backgroundImage+'")':'none';q('[data-background-color-field]').hidden=state.background!=='solid';q('[data-background-image-field]').hidden=state.background!=='image';
       const el=q('[data-clocks]');el.style.fontFamily='"'+state.font.replace(/["\\]/g,'')+'", sans-serif';el.style.fontSize=state.size+'px';el.style.color=state.color;el.style.opacity=state.opacity/100;el.dataset.arrangement=state.layout;el.style.textShadow=state.shadow?'0 2px 5px #000b':'none';el.style.textAlign=state.position.endsWith('right')?'right':'left';q('.wc-workspace').style.alignItems=state.position.startsWith('bottom')?'flex-end':'flex-start';
       q('[data-size-label]').textContent=state.size+' px';q('[data-opacity-label]').textContent=state.opacity+'%';if(q('[data-inherit-color]').checked)q('[data-clock-color]').value=state.color;
       renderTime();
@@ -205,10 +226,22 @@
     q('[data-save]').onclick=e=>{e.preventDefault();const zone=q('[data-zone]').value.trim(),description=q('[data-description]').value.trim(),label=description||locationName(zone),autoDescription=descriptionIsAutomatic||!description,color=q('[data-inherit-color]').checked?null:q('[data-clock-color]').value;if(!zones.includes(zone)){q('[data-error]').textContent='Choose a valid time zone from the list.';return;}if(editing===-1){if(clocks.length>=10)return;clocks.push({label,zone,autoDescription,color});}else if(editing!==null)clocks[editing]={label,zone,autoDescription,color};closeEditor();renderList();renderTime();feedback(label+' saved in this preview.');};
     qa('[data-tab]').forEach(button=>button.onclick=()=>{qa('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));qa('[data-pane]').forEach(p=>p.hidden=p.dataset.pane!==button.dataset.tab);});
     for(const key of ['font','size','opacity','color','format','layout','position','abbr','seconds','day','shadow']){const input=q('[data-'+key+']');input.addEventListener('input',()=>{state[key]=input.type==='checkbox'?input.checked:['size','opacity'].includes(key)?+input.value:input.value;renderStyle();});}
+    q('select[data-background]').onchange=()=>{state.background=q('select[data-background]').value;renderStyle();};
+    q('[data-background-color]').oninput=()=>{state.backgroundColor=q('[data-background-color]').value;renderStyle();};
+    let imageRequest=0;
+    q('[data-background-image]').onchange=()=>{
+      const file=q('[data-background-image]').files[0];if(!file)return;
+      const request=++imageRequest;q('[data-image-error]').textContent='';
+      if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>10*1024*1024){q('[data-image-error]').textContent='Choose a PNG, JPG, or WebP image smaller than 10 MB.';q('[data-background-image]').value='';return;}
+      const failed=()=>{if(request!==imageRequest)return;q('[data-image-error]').textContent='This image could not be opened. Choose another image.';q('[data-background-image]').value='';};
+      const reader=new FileReader();reader.onerror=failed;
+      reader.onload=()=>{if(request!==imageRequest)return;const img=new Image();img.onerror=failed;img.onload=()=>{if(request!==imageRequest)return;state.backgroundImage=reader.result;q('[data-image-name]').textContent=file.name;renderStyle();feedback('Background image selected for this preview only.');};img.src=reader.result;};
+      reader.readAsDataURL(file);
+    };
     q('[data-source]').onchange=()=>{const mode=q('[data-source]').value;q('[data-server-field]').hidden=mode!=='local';q('[data-source-note]').textContent=mode==='local'?'Prefer your specified local or custom server, with a nearby public pool available as fallback.':mode==='system'?'Use the time sources already configured by your operating system.':'Use a geographically nearby pool and let the system time service select a reliable source. Exact nearest-server selection is not guaranteed.';feedback('Time-source preference changed in the preview. System settings are unchanged.');};
     renderList();renderStyle();
     const timer=setInterval(()=>{if(!root.isConnected){clearInterval(timer);return;}renderTime();},1000);
-    if(globalThis.Tweak){const tweak=new Tweak({container:q('[data-clocks]'),onChange:()=>{q('[data-layout]').value=state.layout;renderStyle();}});tweak.addSelect(state,'layout',{label:'Clock arrangement',options:[{label:'Reference-style inline',value:'classic'},{label:'Aligned time column',value:'aligned'},{label:'Large time with label',value:'stacked'}]});}
+    if(globalThis.Tweak){const tweak=new Tweak({container:q('[data-clocks]'),onChange:()=>{q('[data-layout]').value=state.layout;renderStyle();}});tweak.addSelect(state,'layout',{label:'Clock arrangement',options:[{label:'Reference-style inline',value:'classic'},{label:'Aligned time column',value:'aligned'},{label:'Large time with label',value:'stacked'},{label:'Two-column grid',value:'grid'},{label:'Horizontal strip',value:'strip'}]});}
   })();
   </script>
 </div>
