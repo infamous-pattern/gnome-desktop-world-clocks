@@ -69,6 +69,10 @@ gnome-extensions uninstall desktop-world-clocks@infamous-pattern.github.io
 
 Uninstalling leaves saved preferences and the managed image available for a future installation.
 
+## Security review
+
+An [initial security review](docs/SECURITY-REVIEW.md) records dependency and secret-scan results, targeted input checks, and remaining hardening work. It is not an independent security audit.
+
 ## Development
 
 ```sh
