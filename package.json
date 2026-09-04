@@ -1,0 +1,13 @@
+{
+  "name": "gnome-desktop-world-clocks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint extension.js prefs.js shared shell prefs tests",
+    "test": "glib-compile-schemas --strict schemas && gjs -m tests/model.js",
+    "pack": "python3 scripts/package.py"
+  },
+  "devDependencies": {
+    "eslint": "^10.10.0"
+  }
+}

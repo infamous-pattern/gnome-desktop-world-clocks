@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.desktop-world-clocks" path="/org/gnome/shell/extensions/desktop-world-clocks/">
+    <key name="clocks" type="s">
+      <default>'[{"zone": "America/Los_Angeles", "label": "Los Angeles", "color": "", "showAbbr": true}, {"zone": "America/Chicago", "label": "Austin", "color": "", "showAbbr": true}, {"zone": "Europe/London", "label": "London", "color": "", "showAbbr": true}, {"zone": "Europe/Vienna", "label": "Vienna", "color": "", "showAbbr": true}, {"zone": "Asia/Kolkata", "label": "Pune", "color": "", "showAbbr": true}, {"zone": "Asia/Singapore", "label": "Singapore", "color": "", "showAbbr": true}, {"zone": "Asia/Tokyo", "label": "Japan", "color": "", "showAbbr": true}, {"zone": "Australia/Melbourne", "label": "Melbourne", "color": "", "showAbbr": true}]'</default>
+      <summary>Ordered clock definitions</summary>
+    </key>
+    <key name="font-family" type="s">
+      <default>'Adwaita Sans'</default>
+      <summary>Installed font family</summary>
+    </key>
+    <key name="font-size" type="i">
+      <default>26</default>
+      <summary>Font size in logical pixels</summary>
+      <range min="14" max="48"/>
+    </key>
+    <key name="text-opacity" type="i">
+      <default>100</default>
+      <summary>Text opacity percentage</summary>
+      <range min="0" max="100"/>
+    </key>
+    <key name="font-color" type="s">
+      <default>'#ffffff'</default>
+      <summary>Global font color</summary>
+    </key>
+    <key name="layout" type="s">
+      <default>'classic'</default>
+      <summary>Clock layout</summary>
+    </key>
+    <key name="position" type="s">
+      <default>'top-left'</default>
+      <summary>Desktop corner</summary>
+    </key>
+    <key name="monitor" type="i">
+      <default>-1</default>
+      <summary>Monitor index, or minus one for primary</summary>
+      <range min="-1" max="32"/>
+    </key>
+    <key name="margin" type="i">
+      <default>24</default>
+      <summary>Distance from screen edge</summary>
+      <range min="0" max="200"/>
+    </key>
+    <key name="show-abbreviations" type="b">
+      <default>true</default>
+      <summary>Enable time zone abbreviations</summary>
+    </key>
+    <key name="show-seconds" type="b">
+      <default>false</default>
+      <summary>Show seconds</summary>
+    </key>
+    <key name="show-day-difference" type="b">
+      <default>false</default>
+      <summary>Show date difference from system time zone</summary>
+    </key>
+    <key name="use-12-hour" type="b">
+      <default>false</default>
+      <summary>Use a twelve hour clock</summary>
+    </key>
+    <key name="text-shadow" type="b">
+      <default>true</default>
+      <summary>Show text shadow</summary>
+    </key>
+    <key name="background-mode" type="s">
+      <default>'transparent'</default>
+      <summary>Clock group background</summary>
+    </key>
+    <key name="background-color" type="s">
+      <default>'#172a24'</default>
+      <summary>Solid background color</summary>
+    </key>
+    <key name="background-image" type="s">
+      <default>''</default>
+      <summary>Local background image path</summary>
+    </key>
+  </schema>
+</schemalist>

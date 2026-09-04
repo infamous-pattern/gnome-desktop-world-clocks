@@ -1,8 +1,8 @@
-# Design brief — version 01
+# Design brief — approved concept and implementation decisions
 
 ## Direction
 
-Text directly over the wallpaper, inspired by the supplied reference. The starting layout is `Description abbreviation – HH:MM`, with a light text shadow and no panel surrounding the desktop clocks. Preferences are shown beside the desktop for review; the actual extension would use a separate native preferences window.
+Text directly over the wallpaper, inspired by the supplied reference. The starting layout is `Description abbreviation – HH:MM`, with a light text shadow and no panel surrounding the desktop clocks. Preferences are shown beside the desktop in the historical browser preview; the implemented extension uses a separate native preferences window.
 
 Working repository name: `gnome-desktop-world-clocks`.
 User-facing name: **Desktop World Clocks**.
@@ -14,7 +14,7 @@ User-facing name: **Desktop World Clocks**.
 3. Allow an optional custom description for each clock. If omitted or cleared, use the selected time zone’s city/location name (for example, `America/New_York` becomes `New York`). Automatically filled descriptions follow subsequent zone selections; user-written descriptions are preserved. The preview accepts up to 60 characters and wraps long text.
 4. Provide a searchable chooser for all fonts installed and available to GNOME, plus shared font size and clock opacity (0–100%). Offer a global font color with optional per-clock color overrides. Each clock defaults to “Use global font color”; changing the global color affects only clocks that inherit it. Restoring inheritance discards that clock’s override. Opacity applies to the complete clock text, including its shadow, independently of color.
 5. Derive all clock readings from one synchronized system clock. Apply each selected zone's daylight-saving and historical rule changes through the system time-zone database.
-6. Support nearby NTP sources and a specified local/custom NTP server, with truthful synchronization status.
+6. Use the existing system time service, as selected during implementation. Nearby pool and local/custom NTP configuration belong to that service; preferences provide truthful system status and a Date & Time handoff.
 7. Offer five layouts: inline, aligned columns, stacked, two-column grid, and horizontal strip. The grid collapses when space is limited; the strip wraps as needed to keep clocks visible.
 8. Provide transparent, solid-color, or user-selected image backgrounds for the clock group. Transparent is the default. Backgrounds do not change the desktop wallpaper and remain independent of text opacity. Images use centered, cover-style cropping.
 
@@ -36,21 +36,13 @@ The embedded list contains 597 system time-zone identifiers and aliases captured
 
 The GNOME overlay should display the operating system clock. A system time service, such as chrony on Fedora, should synchronize that clock. NTP does not need a separate connection for each displayed time zone.
 
-Proposed preference choices:
+**Selected during implementation:** use the existing system service and open GNOME Date & Time for changes. No NTP client, authenticated helper, or server configuration is included in the extension. The earlier browser source-selection controls remain a historical design preview.
 
-- **Automatic / nearby pool:** use geographically nearby pool candidates; allow the system service to assess source reliability and timing quality.
-- **Local or custom server:** accept a user-supplied hostname or IP; retain suitable pool fallback where allowed by the user's policy.
-- **Existing configuration:** preserve the administrator's current sources.
-
-“Nearby” is not a guarantee of the geographically nearest or lowest-latency server. NTP Pool generally returns servers in or near the client's country. A local LAN server must be configured or supplied; the extension must not assume one exists or invent its address.
-
-Configuration belongs to the privileged system time service. The implementation phase must decide between a native system-settings handoff and a narrowly scoped authenticated helper. Do not attempt root actions or system configuration writes inside GNOME Shell. The preview does not implement either route.
-
-The finished product must distinguish synchronized, unsynchronized, unavailable, and stale/unreachable source states based on actual service evidence. Continue showing the system clock during outages and report status in preferences. Do not show fabricated server addresses, latency, offset, or last-sync measurements.
+The extension reads the standard system synchronization status on opening preferences and on manual refresh. It does not claim a nearest server or invent server addresses, latency, offsets, or last-sync measurements. When status is unavailable, the clocks continue to display system time.
 
 ## GNOME implementation considerations
 
-- Initial development target: GNOME Shell 50, observed locally as 50.4. Other versions need explicit compatibility testing before being declared supported.
+- Compatibility targets: GNOME Shell 49, 50, and 51. GNOME 50.4 has passed isolated runtime tests; 49 and 51 remain pending runtime tests. See the README matrix and development notes.
 - Native preferences should use GTK/libadwaita with a system font chooser and searchable time-zone picker. Enumerate fonts dynamically from the GNOME font system, including user-installed and system-wide fonts; do not ship the preview’s font snapshot as a fixed production list.
 - The overlay should sit above wallpaper and below normal application windows, without intercepting ordinary desktop input.
 - Persist ordered clock records and appearance in GSettings. In the extension, use a native file chooser for backgrounds and persist a local image reference; handle missing or unreadable files with a clear fallback.
@@ -58,13 +50,13 @@ The finished product must distinguish synchronized, unsynchronized, unavailable,
 - Handle session lock, Overview, multiple monitors, workspace changes, scaling, and screen size changes explicitly during implementation.
 - Display ordinary zone abbreviations where available, falling back to a readable UTC/GMT offset. Labels remain separate from zone rules.
 
-## Choices to refine
+## Selected defaults
 
-- Shared font, size, and opacity are selected; per-clock color overrides are now required.
-- Prefer inline rows or aligned time columns?
-- Add drag-to-position or monitor selection? Background modes are now required.
-- Should next/previous-day indicators be enabled by default?
-- Native system-settings handoff or authenticated time-source configuration helper?
+- Shared font, size, and opacity; global color with per-clock overrides.
+- Inline layout, transparent background, top-left anchor, primary monitor.
+- Seconds and day-difference indicators off by default.
+- Native system-settings handoff; no privileged time-service helper.
+- Four corner anchors and monitor selection; no drag-to-position interaction.
 
 ## Preview verification
 
@@ -77,4 +69,4 @@ The preview was opened and visually inspected in a browser. Additions to ten clo
 - [GNOME extension review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html): extension lifecycle and resource cleanup.
 - [GNOME extension best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html): system-service communication and maintainable extension design.
 
-Consulted 2026-09-04. No public release or extension installation has been performed.
+Consulted 2026-09-04. An implementation has now been installed and exercised in a disposable GNOME 50.4 test session. No public release or installation into the active desktop has been performed.

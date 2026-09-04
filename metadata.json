@@ -1,0 +1,13 @@
+{
+  "uuid": "desktop-world-clocks@infamous-pattern.github.io",
+  "name": "Desktop World Clocks",
+  "description": "Up to ten lightweight desktop world clocks, with custom descriptions, fonts, colors, opacity, layouts, and backgrounds. Uses the operating system clock and its existing time synchronization service.",
+  "shell-version": [
+    "49",
+    "50",
+    "51"
+  ],
+  "url": "https://github.com/infamous-pattern/gnome-desktop-world-clocks",
+  "settings-schema": "org.gnome.shell.extensions.desktop-world-clocks",
+  "gettext-domain": "desktop-world-clocks"
+}

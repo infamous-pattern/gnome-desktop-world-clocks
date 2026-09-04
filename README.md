@@ -1,28 +1,88 @@
 # Desktop World Clocks
 
-A proposed GNOME Shell extension that displays up to ten customizable world clocks directly over the desktop wallpaper.
+Up to ten customizable world clocks directly on the GNOME desktop, above the wallpaper and below application windows.
 
-**Status: interactive design preview. The GNOME extension has not been implemented.**
+**Development build. Targets GNOME Shell 49, 50, and 51.** Version declarations are in `metadata.json`; runtime testing is recorded separately:
 
-Open `design/preview.html` in a browser to explore the design. It is self-contained and needs no installation or build step. Changes last for the current page session only.
+| GNOME Shell | Compatibility status |
+| --- | --- |
+| 49 | Targeted; upstream integration source reviewed; runtime testing pending |
+| 50 | Tested on Fedora 44 with GNOME Shell **50.4**, in an isolated Wayland session |
+| 51 | Targeted; 51.rc upstream integration source and porting guide reviewed; runtime testing pending |
 
-## Try the preview
+GNOME 49 and 51 have not been tested on running systems. Full compatibility is not yet verified on those releases. See [validation and remaining checks](docs/DEVELOPMENT.md).
 
-- Add up to ten clocks and choose a time zone. Descriptions default to the selected location name, or you can write your own.
-- Select an existing clock to edit or remove it, or hide its time-zone abbreviation; use the arrows to reorder clocks.
-- Search all installed fonts; change size and opacity; choose a global font color or override it per clock. Adjust time format, placement, and text shadow.
-- Compare five layouts: reference-style inline clocks, aligned columns, large time, a two-column grid, and a wrapping horizontal strip.
-- Choose a transparent, solid-color, or local-image background for the clock area.
-- Explore proposed time-source preferences in the Time sync section.
+![Native desktop clocks](docs/desktop.png)
 
-The clocks run from the browser device's time and use its time-zone rules. Synchronization settings are illustrative: this preview neither queries NTP servers nor changes the operating system. It does not establish whether the device clock is accurate.
+## Features
 
-See [the design brief](design/DESIGN.md) for requirements, implementation boundaries, and source references.
+- Choose from the installed IANA time-zone database, including aliases and UTC. Duplicate zones with different labels are supported.
+- Add, remove, and reorder up to ten clocks. A blank description uses the selected location name, such as `America/New_York` → `New York`.
+- Pick any font family available to GNOME using its native font chooser. Set font size, text opacity, global color, and individual clock color overrides.
+- Hide the time-zone abbreviation per clock, or hide all abbreviations with the global switch. Abbreviations follow daylight-saving rules; numeric zone names display as UTC offsets.
+- Five layouts: inline, aligned time column, large time with label above, two-column grid, and a wrapping horizontal strip.
+- Four corner positions, monitor selection, edge margin, 12/24-hour time, optional seconds, optional date difference, and text shadow.
+- Transparent, solid-color, or local-image backgrounds for the clock group. Text opacity is independent of the background. Images use centered cover cropping.
 
-## Files
+The clock group shrinks to fit when the selected font, labels, and clock count exceed the available desktop space. Grid and strip layouts adapt to monitor width. Monitor `−1` follows the primary monitor; nonnegative values select a monitor by its current index. A disconnected selection falls back to the primary monitor.
 
-- `design/preview.html`: standalone interactive preview.
-- `design/preview.fragment.html`: editable source for the in-conversation preview.
-- `design/DESIGN.md`: proposed behavior and decisions to refine before implementation.
+## Time synchronization and resource use
 
-No GNOME extension files, system services, or installer are included at this stage.
+All clocks read the same **existing system clock**. The operating system's time service (for example, Fedora's chrony) handles synchronization and NTP source selection. The extension does not choose or guarantee the closest server, install a service, request administrator access, or run its own NTP client. Configure nearby pool or local NTP sources through the system's existing administration tools.
+
+Preferences show the system-reported synchronization status, with a manual refresh and an **Open Date & Time** button. Status can be unavailable on systems without the standard time-status service; clocks continue displaying system time. No server, offset, accuracy, or last-sync measurements are invented.
+
+The desktop component has one shared timer, aligned to minute boundaries by default. Enabling seconds uses one update per second. It caches up to ten zone objects, reuses clock widgets, and changes text only when needed. It pauses updates in Overview, during suspend, and when the selected monitor has a full-screen application. Disabling the extension removes its timer, signals, D-Bus subscription, and actors. No web view, network polling, telemetry, helper process, or Node.js runtime is used by the installed extension.
+
+The native preferences process loads fonts and the time-zone list only when needed. Selected PNG/JPG/WebP images must be local and at most 10 MB; preferences prepare a copy no larger than 2048 × 2048 pixels in `$XDG_DATA_HOME/desktop-world-clocks` (normally `~/.local/share/desktop-world-clocks`). Replacing an image removes the previous managed copy. The original stays untouched. Missing images render without an image and can be replaced in preferences.
+
+These are implemented resource controls, not measured CPU or memory guarantees. Leave seconds off and use a transparent background for the lowest update and image-memory cost.
+
+![Native preferences](docs/preferences.png)
+
+## Build and install
+
+Requires GNOME Shell 49–51, GJS, GTK 4.20 or later, libadwaita 1.8 or later, GLib, the system `tzdata` package with `/usr/share/zoneinfo/tzdata.zi`, and the GNOME Extensions command-line tool. Packaging additionally requires Python 3 and `glib-compile-schemas`. Normal GNOME installations supply the runtime libraries; Node.js is only used for development linting.
+
+From this repository:
+
+```sh
+python3 scripts/package.py
+gnome-extensions install --force dist/desktop-world-clocks@infamous-pattern.github.io.shell-extension.zip
+```
+
+On Wayland, log out and back in after the first installation or a code update. Then enable and configure:
+
+```sh
+gnome-extensions enable desktop-world-clocks@infamous-pattern.github.io
+gnome-extensions prefs desktop-world-clocks@infamous-pattern.github.io
+```
+
+You can also enable it and open preferences through the GNOME Extensions app. Version validation should remain enabled. Clocks are click-through and configured from preferences. They are not displayed on the lock screen.
+
+To stop or uninstall:
+
+```sh
+gnome-extensions disable desktop-world-clocks@infamous-pattern.github.io
+gnome-extensions uninstall desktop-world-clocks@infamous-pattern.github.io
+```
+
+Uninstalling leaves saved preferences and the managed image available for a future installation.
+
+## Development
+
+```sh
+npm ci
+npm run lint
+npm test
+python3 scripts/test-shell.py
+npm run pack
+```
+
+The Shell test creates a disposable software-rendered Wayland session with separate settings and data directories; it does not install into or alter the active desktop. See [development notes](docs/DEVELOPMENT.md) for test requirements and scope.
+
+The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. It has not been reviewed or approved by extensions.gnome.org. The source includes the guide's required AI-generation notice; a maintainer must understand and maintain the code before any submission there.
+
+The approved browser concept remains in [design/preview.html](design/preview.html); its time-source controls are historical mockups. The actual extension uses the existing system service as selected during implementation. See [design decisions](design/DESIGN.md).
+
+License: GPL-2.0-or-later. See [LICENSE](LICENSE).
