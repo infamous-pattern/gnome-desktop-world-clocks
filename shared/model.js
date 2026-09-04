@@ -5,6 +5,7 @@
 import GLib from 'gi://GLib';
 
 export const MAX_CLOCKS = 10;
+export const MAX_SETTINGS_LENGTH = 32768;
 export const LAYOUTS = ['classic', 'aligned', 'stacked', 'grid', 'strip'];
 export const POSITIONS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
 export const BACKGROUNDS = ['transparent', 'solid', 'image'];
@@ -18,9 +19,12 @@ export function validColor(value, fallback = '') {
 }
 
 export function readClocks(settings) {
+    const serialized = settings.get_string('clocks');
+    if (serialized.length > MAX_SETTINGS_LENGTH)
+        return [];
     let records;
     try {
-        records = JSON.parse(settings.get_string('clocks'));
+        records = JSON.parse(serialized);
     } catch {
         return [];
     }
@@ -28,7 +32,7 @@ export function readClocks(settings) {
         return [];
 
     return records.slice(0, MAX_CLOCKS).filter(record =>
-        record && typeof record.zone === 'string' && /^[A-Za-z0-9_+./-]{1,100}$/.test(record.zone)
+        record && typeof record.zone === 'string' && record.zone.length <= 100 && /^[A-Za-z0-9_+-]+(?:\/[A-Za-z0-9_+-]+)*$/.test(record.zone)
     ).map(record => ({
         zone: record.zone,
         label: typeof record.label === 'string' ? record.label.trim().slice(0, 60) : '',
@@ -70,4 +74,9 @@ export function boundaryDelay(realTimeMilliseconds, seconds) {
 
 export function cssString(value) {
     return `"${value.replaceAll('\\', '\\\\').replaceAll('"', '\\"').replace(/[\n\r\f]/g, ' ')}"`;
+}
+
+export function managedImagePath(path) {
+    const directory = GLib.build_filenamev([GLib.get_user_data_dir(), 'desktop-world-clocks']);
+    return GLib.path_get_dirname(path) === directory && /^background-[a-f0-9-]{36}\.png$/.test(GLib.path_get_basename(path));
 }

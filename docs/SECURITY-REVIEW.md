@@ -46,3 +46,13 @@ gitleaks git . --redact --no-banner --report-format json --report-path /tmp/worl
 The first command sends dependency names/versions to the configured npm audit registry, not the extension source. Gitleaks scans locally. See the [npm audit documentation](https://docs.npmjs.com/cli/v11/commands/npm-audit/) and the [Gitleaks release](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1).
 
 Reviewed ZIP SHA-256: `5870bf7439de8bbb7f540450f8b84ef751e84d5b343434bcd27f25d62e513738`.
+
+## Hardening follow-up — submission preparation
+
+The subsequent submission-preparation change adds a 32,768-character limit before JSON parsing, rejects path-like time-zone identifiers, limits the font string used by Shell, and restricts Shell background paths to managed image names. Preferences reject non-local/non-regular input and perform bounded reads (10 MB plus one overflow-detection byte) before decoding an immutable snapshot. PNG/JPEG/WebP signatures are checked. The package uses an exact runtime-file allowlist.
+
+Validation: 27 adversarial input checks, seven native image rejection/cancellation checks, the 25 model checks, lint, and the GNOME 50.4 isolated desktop/preferences suite pass. The old ZIP hash and original scan records above describe the earlier implementation, not this revised ZIP. Rerun dependency and secret scans for the final release. Internal native-decoder memory/CPU limits, independent review, and full 49/51 runtime validation remain outside the completed checks; no pre-decode pixel budget or decoder sandbox is claimed.
+
+Cross-version follow-up: model/security checks and the core Shell/preferences suite also passed on GNOME 49.9 and 51.beta in isolated containers. Image tests were explicitly excluded there because of nested image-sandbox restrictions; see [development notes](DEVELOPMENT.md).
+
+Submission-preparation scans were rerun: npm reported zero known vulnerabilities and Gitleaks found no secrets in the revised working tree. Their JSON output is in `docs/security/2026-09-04/submission-preparation-*.json`; the new ZIP/source checksums and test scope are recorded in [submission-validation.json](submission-validation.json).

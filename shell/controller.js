@@ -10,7 +10,7 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {ngettext} from 'resource:///org/gnome/shell/extensions/extension.js';
-import {boundaryDelay, clockText, cssString, LAYOUTS, readClocks, validColor} from '../shared/model.js';
+import {boundaryDelay, clockText, cssString, LAYOUTS, managedImagePath, readClocks, validColor} from '../shared/model.js';
 
 export class ClockController {
     constructor(settings) {
@@ -97,7 +97,7 @@ export class ClockController {
         this._content = new St.Widget({layout_manager: grid, reactive: false});
         this._content.opacity = Math.round(this._settings.get_int('text-opacity') * 2.55);
         this._actor.set_child(this._content);
-        const font = cssString(this._settings.get_string('font-family'));
+        const font = cssString(this._settings.get_string('font-family').slice(0, 256));
         const shadow = this._settings.get_boolean('text-shadow') ? 'text-shadow: 0px 2px 4px rgba(0,0,0,0.8);' : '';
         this._content.set_style(`font-family: ${font}; font-size: ${size}px; ${shadow}`);
         this._actor.set_style(this._backgroundStyle(mode));
@@ -163,7 +163,7 @@ export class ClockController {
         if (mode === 'solid')
             return `${base} background-color: ${validColor(this._settings.get_string('background-color'), '#172a24')};`;
         const path = this._settings.get_string('background-image');
-        if (mode === 'image' && GLib.path_is_absolute(path)) {
+        if (mode === 'image' && managedImagePath(path)) {
             const uri = Gio.File.new_for_path(path).get_uri();
             return `${base} background-image: url(${cssString(uri)}); background-size: cover; background-position: center;`;
         }

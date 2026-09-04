@@ -6,11 +6,11 @@ Up to ten customizable world clocks directly on the GNOME desktop, above the wal
 
 | GNOME Shell | Compatibility status |
 | --- | --- |
-| 49 | Targeted; upstream integration source reviewed; runtime testing pending |
+| 49 | Core suite passed on **49.9** in an isolated Fedora 43 container; image and physical-session checks pending |
 | 50 | Tested on Fedora 44 with GNOME Shell **50.4**, in an isolated Wayland session |
-| 51 | Targeted; 51.rc upstream integration source and porting guide reviewed; runtime testing pending |
+| 51 | Core suite passed on **51.beta** in an isolated Fedora development container; image, physical-session, and final-release checks pending |
 
-GNOME 49 and 51 have not been tested on running systems. Full compatibility is not yet verified on those releases. See [validation and remaining checks](docs/DEVELOPMENT.md).
+The core suite exercises real Shell and native preferences, including layouts, timers, colors, clock editing, and cleanup. Container image tests are excluded because the nested image-decoder sandbox cannot run under this host’s container restrictions. Full compatibility is not yet verified on GNOME 49 and 51. See [validation and remaining checks](docs/DEVELOPMENT.md).
 
 ![Native desktop clocks](docs/desktop.png)
 
@@ -32,9 +32,9 @@ All clocks read the same **existing system clock**. The operating system's time 
 
 Preferences show the system-reported synchronization status, with a manual refresh and an **Open Date & Time** button. Status can be unavailable on systems without the standard time-status service; clocks continue displaying system time. No server, offset, accuracy, or last-sync measurements are invented.
 
-The desktop component has one shared timer, aligned to minute boundaries by default. Enabling seconds uses one update per second. It caches up to ten zone objects, reuses clock widgets, and changes text only when needed. It pauses updates in Overview, during suspend, and when the selected monitor has a full-screen application. Disabling the extension removes its timer, signals, D-Bus subscription, and actors. No web view, network polling, telemetry, helper process, or Node.js runtime is used by the installed extension.
+The desktop component has one shared timer, aligned to minute boundaries by default. Enabling seconds uses one update per second. It caches up to ten zone objects, reuses clock widgets, and changes text only when needed. It pauses updates in Overview, during suspend, and when the selected monitor has a full-screen application. Disabling the extension removes its timer, signals, D-Bus subscription, and actors. The desktop component starts no web view, network polling, telemetry, helper process, or Node.js runtime. Native preferences may use the operating system’s own image-decoder and portal services.
 
-The native preferences process loads fonts and the time-zone list only when needed. Selected PNG/JPG/WebP images must be local and at most 10 MB; preferences prepare a copy no larger than 2048 × 2048 pixels in `$XDG_DATA_HOME/desktop-world-clocks` (normally `~/.local/share/desktop-world-clocks`). Replacing an image removes the previous managed copy. The original stays untouched. Missing images render without an image and can be replaced in preferences.
+The native preferences process loads fonts and the time-zone list only when needed. Selected PNG/JPG/WebP images must be local regular files and at most 10 MB; bounded reads and raster-signature checks enforce that limit before decoding; preferences prepare a copy no larger than 2048 × 2048 pixels in `$XDG_DATA_HOME/desktop-world-clocks` (normally `~/.local/share/desktop-world-clocks`). Replacing an image removes the previous managed copy. The original stays untouched. Missing images render without an image and can be replaced in preferences.
 
 These are implemented resource controls, not measured CPU or memory guarantees. Leave seconds off and use a transparent background for the lowest update and image-memory cost.
 
@@ -69,6 +69,10 @@ gnome-extensions uninstall desktop-world-clocks@infamous-pattern.github.io
 
 Uninstalling leaves saved preferences and the managed image available for a future installation.
 
+## GNOME review preparation
+
+See the [submission checklist and maintainer walkthrough](docs/GNOME-SUBMISSION.md). Code, packaging, and security checks are prepared; maintainer review, public support access, and the outstanding version/session tests remain before upload.
+
 ## Security review
 
 An [initial security review](docs/SECURITY-REVIEW.md) records dependency and secret-scan results, targeted input checks, and remaining hardening work. It is not an independent security audit.
@@ -79,6 +83,7 @@ An [initial security review](docs/SECURITY-REVIEW.md) records dependency and sec
 npm ci
 npm run lint
 npm test
+npm run test:security
 python3 scripts/test-shell.py
 npm run pack
 ```

@@ -21,6 +21,7 @@ const extension = extensionManager.createExtensionObject(serialized);
 const {default: Entry} = await import(`${directory.get_uri()}/prefs.js`);
 extension.stateObj = new Entry({...metadata, dir: directory, path});
 const {Preferences} = await import(`${directory.get_uri()}/prefs/window.js`);
+const {loadImage} = await import(`${directory.get_uri()}/prefs/images.js`);
 
 function pause(milliseconds) {
     return new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, milliseconds, () => {
@@ -41,6 +42,7 @@ function descendants(widget) {
     return result;
 }
 
+const coreOnly = GLib.getenv('WORLD_CLOCK_CORE_ONLY') === '1';
 let failed = false;
 const app = new Adw.Application({application_id: 'io.github.infamous_pattern.WorldClocksTest'});
 app.connect('activate', () => {
@@ -48,6 +50,12 @@ app.connect('activate', () => {
         const window = new Adw.PreferencesWindow({application: app, default_width: 660, default_height: 740, title: 'Desktop World Clocks'});
         const settings = extension.stateObj.getSettings();
         const preferences = new Preferences(window, settings);
+        let lastError = '';
+        const originalToast = preferences._toast.bind(preferences);
+        preferences._toast = message => {
+            lastError = message;
+            originalToast(message);
+        };
         preferences.build();
         window.present();
         await pause(500);
@@ -69,30 +77,62 @@ app.connect('activate', () => {
         const saved = JSON.parse(settings.get_string('clocks')).at(-1);
         assert(saved.zone === 'America/New_York' && saved.label === '' && saved.showAbbr === false, 'Native editor saves defaults and per-clock option');
         await pause(200);
-        const resultDir = GLib.build_filenamev([GLib.getenv('WORLD_CLOCK_TEST_ROOT'), 'test-results']);
-        const sourceImage = Gio.File.new_for_path(`${resultDir}/desktop.png`);
-        preferences._prepareImage(sourceImage);
-        for (let attempt = 0; attempt < 30 && !settings.get_string('background-image'); attempt++)
+        if (!coreOnly) {
+            const resultDir = GLib.build_filenamev([GLib.getenv('WORLD_CLOCK_TEST_ROOT'), 'test-results']);
+            const sourceImage = Gio.File.new_for_path(`${resultDir}/desktop.png`);
+            await preferences._prepareImage(sourceImage);
+            const fixtureDir = GLib.build_filenamev([GLib.get_user_data_dir(), 'image-fixtures']);
+            GLib.mkdir_with_parents(fixtureDir, 0o700);
+            const invalid = `${fixtureDir}/invalid.png`;
+            const oversized = `${fixtureDir}/oversized.png`;
+            const disguised = `${fixtureDir}/disguised.png`;
+            GLib.file_set_contents(invalid, new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]));
+            const large = new Uint8Array(10 * 1024 * 1024 + 1);
+            large.set([137, 80, 78, 71, 13, 10, 26, 10]);
+            GLib.file_set_contents(oversized, large);
+            GLib.file_set_contents(disguised, '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>');
+            const symlink = Gio.File.new_for_path(`${fixtureDir}/linked.png`);
+            symlink.make_symbolic_link(sourceImage.get_path(), null);
+            for (const file of [Gio.File.new_for_uri('https://example.invalid/test.png'), Gio.File.new_for_path(fixtureDir),
+                Gio.File.new_for_path(invalid), Gio.File.new_for_path(oversized), Gio.File.new_for_path(disguised), symlink]) {
+                let rejected = false;
+                try {
+                    await loadImage(file, new Gio.Cancellable());
+                } catch {
+                    rejected = true;
+                }
+                assert(rejected, 'Unsafe or malformed image rejected');
+            }
+            const cancelled = new Gio.Cancellable();
+            cancelled.cancel();
+            let cancelledRead = false;
+            try {
+                await loadImage(sourceImage, cancelled);
+            } catch (error) {
+                cancelledRead = error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED);
+            }
+            assert(cancelledRead, 'Image loading respects cancellation');
+            const firstImage = settings.get_string('background-image');
+            assert(firstImage && GLib.file_test(firstImage, GLib.FileTest.IS_REGULAR), `Image prepared and stored locally: ${lastError}`);
+            const prepared = GdkPixbuf.Pixbuf.new_from_file(firstImage);
+            assert(prepared.get_width() <= 2048 && prepared.get_height() <= 2048, 'Background dimensions bounded');
+            preferences._saveImage(prepared);
             await pause(100);
-        const firstImage = settings.get_string('background-image');
-        assert(firstImage && GLib.file_test(firstImage, GLib.FileTest.IS_REGULAR), 'Image prepared and stored locally');
-        const prepared = GdkPixbuf.Pixbuf.new_from_file(firstImage);
-        assert(prepared.get_width() <= 2048 && prepared.get_height() <= 2048, 'Background dimensions bounded');
-        preferences._saveImage(prepared);
-        await pause(100);
-        assert(firstImage !== settings.get_string('background-image'), 'Image replacement gets a fresh texture URI');
-        assert(!GLib.file_test(firstImage, GLib.FileTest.EXISTS), 'Previous managed image cleaned up');
-        settings.set_string('background-mode', 'image');
-        const paintable = new Gtk.WidgetPaintable({widget: window});
-        const snapshot = new Gtk.Snapshot();
-        paintable.snapshot(snapshot, window.get_width(), window.get_height());
-        const node = snapshot.to_node();
-        const texture = window.get_renderer().render_texture(node, null);
-        GLib.mkdir_with_parents(resultDir, 0o700);
-        texture.save_to_png(`${resultDir}/preferences.png`);
+            assert(firstImage !== settings.get_string('background-image'), 'Image replacement gets a fresh texture URI');
+            assert(!GLib.file_test(firstImage, GLib.FileTest.EXISTS), 'Previous managed image cleaned up');
+            settings.set_string('background-mode', 'image');
+            const paintable = new Gtk.WidgetPaintable({widget: window});
+            const snapshot = new Gtk.Snapshot();
+            paintable.snapshot(snapshot, window.get_width(), window.get_height());
+            const node = snapshot.to_node();
+            const texture = window.get_renderer().render_texture(node, null);
+            GLib.mkdir_with_parents(resultDir, 0o700);
+            texture.save_to_png(`${resultDir}/preferences.png`);
+        }
         preferences.close();
         window.close();
-        print('PASS: native preferences, live font chooser, zone picker, clock editor, and cleanup');
+        print(coreOnly ? 'PASS: native preferences and zone/font controls (partial: images/screenshots excluded)'
+            : 'PASS: native preferences, zone/font controls, image limits, seven image rejection/cancellation checks, and cleanup');
     };
     run().catch(error => {
         failed = true;

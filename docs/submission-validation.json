@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-04",
+  "archive_sha256": "3442602bc05c5c0fdb9854fd7835e8a296c30ff83bcb65fa75e6dd5c091dc27b",
+  "runtime_file_sha256": {
+    "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+    "extension.js": "5364c4bde4d85cb8036de602d340db85cf1e39e15d7bfbd4dd82da2ec98a9d64",
+    "metadata.json": "ca715cc021a43a22e98a36cb799a071517f9904dccb5840bf0abfa370ce047a4",
+    "prefs/images.js": "bf78c1fa082a3bb5e3af17e3919a5d9705fe988f2f5ebe695f8e99c674b5137b",
+    "prefs/window.js": "2eebfe3992b7668f41b26bba3c0a654171d3a2290ea9a09de13e615abceba9be",
+    "prefs/zones.js": "06e38733a232b68be734a4df7c340e3e98671ad9d6b9d3eb31bbdfccfb29a22a",
+    "prefs.js": "f3cdf49fffaee907cb6638b7eac1efda818c8c998aea2f1acb16c4123813d9c4",
+    "schemas/gschemas.compiled": "b0d2d87e8e5b823b5cffe74c929186d56c6c83139c91f097f63b155b06210ea7",
+    "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f3e62fe0b05fbdb7acc5c2c9af1568fb702dee01234339581b998e09624188c3",
+    "shared/model.js": "2cb8981854fc7ee8d5918fdca3c4d0c4de5ed26d1c4377e6c0ff2284ca975a25",
+    "shell/controller.js": "a7d74f2c18e2264202fc2e27c311d4bc8e827c3b140c5a038bf02ab3de3b447a"
+  },
+  "validation": {
+    "model_checks": 25,
+    "adversarial_checks": 27,
+    "image_rejection_and_cancellation_checks": 7,
+    "npm_known_vulnerabilities": 0,
+    "working_tree_secret_findings": 0
+  },
+  "gnome_runtime": [
+    {
+      "version": "49.9",
+      "environment": "Fedora 43 rootless container",
+      "mode": "core-only",
+      "result": "pass"
+    },
+    {
+      "version": "50.4",
+      "environment": "Fedora 44 isolated Wayland session",
+      "mode": "full automated suite",
+      "result": "pass"
+    },
+    {
+      "version": "51.beta",
+      "environment": "Fedora development rootless container",
+      "mode": "core-only",
+      "result": "pass"
+    }
+  ],
+  "remaining": [
+    "Maintainer manual source review and AI notice removal",
+    "Public support repository access",
+    "GNOME 49 and 51 image tests",
+    "Physical-session checks",
+    "Final GNOME 51 release validation"
+  ]
+}

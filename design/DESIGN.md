@@ -42,7 +42,7 @@ The extension reads the standard system synchronization status on opening prefer
 
 ## GNOME implementation considerations
 
-- Compatibility targets: GNOME Shell 49, 50, and 51. GNOME 50.4 has passed isolated runtime tests; 49 and 51 remain pending runtime tests. See the README matrix and development notes.
+- Compatibility targets: GNOME Shell 49, 50, and 51. GNOME 50.4 has passed isolated runtime tests; 49.9 and 51.beta passed core container checks, while image and physical-session validation remain pending. See the README matrix and development notes.
 - Native preferences should use GTK/libadwaita with a system font chooser and searchable time-zone picker. Enumerate fonts dynamically from the GNOME font system, including user-installed and system-wide fonts; do not ship the preview’s font snapshot as a fixed production list.
 - The overlay should sit above wallpaper and below normal application windows, without intercepting ordinary desktop input.
 - Persist ordered clock records and appearance in GSettings. In the extension, use a native file chooser for backgrounds and persist a local image reference; handle missing or unreadable files with a clear fallback.

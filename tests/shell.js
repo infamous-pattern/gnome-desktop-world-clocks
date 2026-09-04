@@ -6,6 +6,7 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 
+const coreOnly = GLib.getenv('WORLD_CLOCK_CORE_ONLY') === '1';
 const UUID = 'desktop-world-clocks@infamous-pattern.github.io';
 export const METRICS = {};
 
@@ -104,11 +105,21 @@ export async function run() {
     settings.reset('position');
     settings.reset('background-mode');
     await Scripting.sleep(200);
-    const resultDir = `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/test-results`;
-    GLib.mkdir_with_parents(resultDir, 0o700);
-    const stream = Gio.File.new_for_path(`${resultDir}/desktop.png`).replace(null, false, Gio.FileCreateFlags.NONE, null);
-    await new Shell.Screenshot().screenshot(false, stream);
-    stream.close(null);
+    if (!coreOnly) {
+        const desktopBackground = new Gio.Settings({schema_id: 'org.gnome.desktop.background'});
+        desktopBackground.set_string('picture-uri', '');
+        desktopBackground.set_string('picture-uri-dark', '');
+        desktopBackground.set_string('picture-options', 'none');
+        desktopBackground.set_string('primary-color', '#172a24');
+        desktopBackground.set_string('color-shading-type', 'solid');
+        await Scripting.sleep(300);
+        const resultDir = `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/test-results`;
+        GLib.mkdir_with_parents(resultDir, 0o700);
+        const stream = Gio.File.new_for_path(`${resultDir}/desktop.png`).replace(null, false, Gio.FileCreateFlags.NONE, null);
+        const [captured] = await new Shell.Screenshot().screenshot(false, stream);
+        assert(captured, 'Desktop screenshot captured successfully');
+        stream.close(null);
+    }
     const process = Gio.Subprocess.new(['gjs', '-m', `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/tests/prefs.js`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
     const [, output, errors] = await new Promise((resolve, reject) => {
         process.communicate_utf8_async(null, null, (source, result) => {
@@ -121,5 +132,5 @@ export async function run() {
     });
     print(output);
     assert(process.get_successful(), `Native preferences test: ${errors}`);
-    print('PASS: GNOME Shell rendering, layouts, colors, opacity, scheduling, and five lifecycle cycles');
+    print(`PASS: GNOME Shell layouts, colors, opacity, scheduling, and five lifecycle cycles${coreOnly ? ' (partial: images/screenshots excluded)' : ''}`);
 }

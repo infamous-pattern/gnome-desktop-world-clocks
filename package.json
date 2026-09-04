@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "eslint extension.js prefs.js shared shell prefs tests",
     "test": "glib-compile-schemas --strict schemas && gjs -m tests/model.js",
-    "pack": "python3 scripts/package.py"
+    "pack": "python3 scripts/package.py",
+    "test:security": "gjs -m tests/security.js"
   },
   "devDependencies": {
     "eslint": "^10.10.0"

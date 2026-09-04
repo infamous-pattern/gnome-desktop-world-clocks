@@ -4,15 +4,15 @@
 // and can maintain this code.
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
-import GdkPixbuf from 'gi://GdkPixbuf';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
 
 import {gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
-import {BACKGROUNDS, LAYOUTS, locationName, MAX_CLOCKS, POSITIONS, readClocks, validColor, writeClocks} from '../shared/model.js';
+import {BACKGROUNDS, LAYOUTS, locationName, managedImagePath, MAX_CLOCKS, POSITIONS, readClocks, validColor, writeClocks} from '../shared/model.js';
 import {loadZones} from './zones.js';
+import {loadImage} from './images.js';
 
 function action(title, widget, subtitle = '') {
     const row = new Adw.ActionRow({title, subtitle, use_markup: false});
@@ -309,41 +309,12 @@ export class Preferences {
         this._imageCancellable?.cancel();
         const cancellable = new Gio.Cancellable();
         this._imageCancellable = cancellable;
-        file.query_info_async('standard::size,standard::content-type', Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, cancellable, (source, result) => {
-            try {
-                const info = source.query_info_finish(result);
-                if (cancellable.is_cancelled())
-                    return;
-                if (info.get_size() > 10 * 1024 * 1024 || !['image/png', 'image/jpeg', 'image/webp'].includes(info.get_content_type())) {
-                    this._toast(_('Choose a PNG, JPG, or WebP image no larger than 10 MB.'));
-                    return;
-                }
-                source.read_async(GLib.PRIORITY_DEFAULT, cancellable, (openedFile, openedResult) => {
-                    let stream;
-                    try {
-                        stream = openedFile.read_finish(openedResult);
-                    } catch (error) {
-                        if (!cancellable.is_cancelled())
-                            this._toast(error.message);
-                        return;
-                    }
-                    GdkPixbuf.Pixbuf.new_from_stream_at_scale_async(stream, 2048, 2048, true, cancellable, (_object, decoded) => {
-                        try {
-                            const pixbuf = GdkPixbuf.Pixbuf.new_from_stream_finish(decoded);
-                            if (!cancellable.is_cancelled())
-                                this._saveImage(pixbuf);
-                        } catch (error) {
-                            if (!cancellable.is_cancelled())
-                                this._toast(error.message);
-                        } finally {
-                            stream.close_async(GLib.PRIORITY_DEFAULT, null, (input, closed) => input.close_finish(closed));
-                        }
-                    });
-                });
-            } catch (error) {
-                if (!cancellable.is_cancelled())
-                    this._toast(error.message);
-            }
+        return loadImage(file, cancellable).then(pixbuf => {
+            if (!cancellable.is_cancelled())
+                this._saveImage(pixbuf);
+        }).catch(error => {
+            if (!cancellable.is_cancelled())
+                this._toast(error.message);
         });
     }
 
@@ -358,7 +329,7 @@ export class Preferences {
             pixbuf.savev(path, 'png', [], []);
             this._settings.set_string('background-image', path);
             this._imageRow.subtitle = basename;
-            if (GLib.path_get_dirname(previous) === directory && /^background-[a-f0-9-]{36}\.png$/.test(GLib.path_get_basename(previous))) {
+            if (managedImagePath(previous)) {
                 Gio.File.new_for_path(previous).delete_async(GLib.PRIORITY_DEFAULT, null, (file, result) => {
                     try {
                         file.delete_finish(result);

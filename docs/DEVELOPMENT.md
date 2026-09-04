@@ -4,7 +4,7 @@
 
 - `extension.js`: enable/disable entry point; no objects or signal connections at module scope.
 - `shell/controller.js`: owns the desktop actors, bounded zone cache, visibility, positioning, and single update source.
-- `prefs.js`, `prefs/window.js`, `prefs/zones.js`: separate GTK/libadwaita process; native font/color/file choosers, cancellable database/image/status reads, and GSettings edits.
+- `prefs.js`, `prefs/window.js`, `prefs/zones.js`, `prefs/images.js`: separate GTK/libadwaita process; native font/color/file choosers, cancellable database/image/status reads, and GSettings edits.
 - `shared/model.js`: formatting, date comparisons, input normalization, and scheduling arithmetic. Imports GLib only.
 - `schemas/`: persistent clock and appearance settings.
 - `scripts/package.py`: compiles the schema strictly and archives runtime files only. No browser prototype, npm dependencies, tests, or build tools are shipped.
@@ -34,7 +34,7 @@ Use Node.js 22.13+ for ESLint 10; the lockfile pins dependencies. `npm test` use
 
 ## Remaining release gates
 
-GNOME 49 and 51 runtime testing is **pending**. Run the same tests on those releases before upgrading their status to verified; test a final GNOME 51 build when available. Declaring versions in metadata is not proof of compatibility.
+Full GNOME 49 and 51 runtime validation is **pending**; the follow-up core container results below cover a subset. Run the same tests on those releases before upgrading their status to verified; test a final GNOME 51 build when available. Declaring versions in metadata is not proof of compatibility.
 
 On physical desktops, verify suspend/resume, lock/unlock, full-screen applications, monitor hotplug, multiple-monitor selection, fractional/HiDPI scaling, desktop-icon extensions, wallpaper changes, and image selection through the file portal. Confirm the operating system's actual time status independently. The isolated tests cover Overview and timer ownership, but do not establish these hardware/session behaviors or real NTP accuracy.
 
@@ -45,3 +45,28 @@ Measure idle CPU, wakeups, and incremental Shell memory with 0/1/10 clocks, seco
 Reviewed against the [extension guide](https://gjs.guide/extensions/), [review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html), [best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html), and porting notes for [49](https://gjs.guide/extensions/upgrading/gnome-shell-49.html), [50](https://gjs.guide/extensions/upgrading/gnome-shell-50.html), and [51](https://gjs.guide/extensions/upgrading/gnome-shell-51.html).
 
 Cleanup is synchronous, including for GNOME 51. There are no removed backend/GLSL APIs, legacy `imports` in the extension, GTK imports in Shell code, Shell imports in preferences, root commands, network clients, or permanent background processes. Runtime strings use gettext, but translated catalogs have not yet been supplied.
+
+## Submission-preparation follow-up (2026-09-04)
+
+The [submission checklist](GNOME-SUBMISSION.md) maps the current guide to code and remaining manual gates. Packaging now uses an explicit 11-file allowlist and a separate submission mode that refuses unreviewed AI notices. Security checks now include 27 adversarial input checks, bounded clock-settings parsing, managed image-path policy, bounded image reads, and raster-signature checks. The native preferences suite additionally rejects remote, directory, symbolic-link, malformed, disguised SVG, and oversized inputs and verifies cancellation. Screenshot capture uses an isolated plain-color desktop.
+
+## Cross-version container results
+
+The revised model suite (25 checks) and security suite (27 checks) passed under GJS in Fedora 43 with **GNOME 49.9** and Fedora development with **GNOME 51.beta**. Real headless Shell and native preferences also passed the explicitly partial `--core-only` suite: layouts, colors, opacity, scheduling, repeated cleanup, zone selection, clock editing, and font/color controls. The default/full suite remains the required image test; it passed on the host's GNOME 50.4.
+
+The full container runs exposed an environment restriction: GdkPixbuf's Glycin encoder/decoder could not create its nested Bubblewrap user mapping. Image encoding therefore failed before the chosen image could load. Codec inspection confirmed PNG/JPEG/WebP support was installed. Image testing was not counted as passed, and no runtime image sandbox was disabled. A `--core-only` run explicitly excludes image operations and screenshots in both its command and PASS output.
+
+The test harness now ends the process group it created before deleting temporary files, because container-activated metadata services could briefly outlive Shell. This does not affect the user's desktop or the extension runtime.
+
+`scripts/Containerfile` provides the Fedora test environment. Build it with `FEDORA=43` or `FEDORA=rawhide`. Use a **temporary source copy**, never mount the active desktop or home directory. Example (replace the temporary path with your own copy):
+
+```sh
+podman build --build-arg FEDORA=43 -t localhost/world-clocks-gnome-test:49 -f scripts/Containerfile .
+podman run --rm --network=none --cap-drop=ALL --security-opt=no-new-privileges \
+  -e DBUS_SYSTEM_BUS_ADDRESS=unix:path=/tmp/world-clocks-system-bus \
+  -v /tmp/world-clocks-container-49:/work:Z \
+  localhost/world-clocks-gnome-test:49 /bin/bash -c \
+  'dbus-daemon --session --fork --address=unix:path=/tmp/world-clocks-system-bus && python3 scripts/test-shell.py --core-only'
+```
+
+The private bus is a test transport, not a running systemd/logind/time service. These containers do not validate suspend, lock, real time synchronization, or physical monitor behavior. Complete those checks in a normal desktop or VM. Container tags are local test tools and are excluded from the extension ZIP.
