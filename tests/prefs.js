@@ -49,7 +49,7 @@ app.connect('activate', () => {
     const run = async () => {
         const window = new Adw.PreferencesWindow({application: app, default_width: 660, default_height: 740, title: 'Desktop World Clocks'});
         const settings = extension.stateObj.getSettings();
-        const preferences = new Preferences(window, settings);
+        const preferences = new Preferences(window, settings, metadata);
         let lastError = '';
         const originalToast = preferences._toast.bind(preferences);
         preferences._toast = message => {
@@ -177,6 +177,15 @@ app.connect('activate', () => {
         preferences._groupCountRow.value = 1;
         print(coreOnly ? 'PASS: group selector, independent clock/appearance edits, and preserved hidden settings'
             : 'PASS: group selector, independent clock/appearance/image edits, cancellation, and preserved hidden settings');
+        window.visible_page = preferences._about;
+        await pause(200);
+        if (!coreOnly) {
+            const paintable = new Gtk.WidgetPaintable({widget: window});
+            const snapshot = new Gtk.Snapshot();
+            paintable.snapshot(snapshot, window.get_width(), window.get_height());
+            const texture = window.get_renderer().render_texture(snapshot.to_node(), null);
+            texture.save_to_png(`${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/test-results/about.png`);
+        }
         preferences.close();
         window.close();
         print(coreOnly ? 'PASS: native preferences and zone/font controls (partial: images/screenshots excluded)'

@@ -88,3 +88,7 @@ The schema keeps Group 1 at the original path and adds three child settings path
 The manager shares one timer and one system sleep subscription across all groups. A visible seconds group enables second-boundary wakeups; minute-only groups only reformat when the minute changes. Empty/hidden groups never keep the timer alive. The group suite tests 40 clocks, distinct styling, original settings preservation, group hiding/restoration, mixed refresh rates, sleep/Overview pause, and full cleanup.
 
 The four-group build passed the full GNOME 50.4 native suite, including image handling and screenshot capture, and the core suite on GNOME 49.9 and 51.beta. The core runs exclude image tests and physical-session behavior. Lint, 25 model checks, 33 adversarial checks, the dependency audit (zero known vulnerabilities), and the directory secret scan (zero findings) also passed. All 13 packaged files match the recorded runtime hashes.
+
+## About tab (2026-09-04)
+
+The native About page displays the GPL-2.0-or-later license, metadata version (or Development build), declared GNOME targets, project and issue links, and a short time/privacy description. Link buttons only open their destinations on user activation. The page remains available when switching clock groups. The full GNOME 50.4 suite and lint pass; the native screenshot was visually checked. The runtime allowlist now contains 14 files. No desktop timer or clock rendering code changed for this addition.

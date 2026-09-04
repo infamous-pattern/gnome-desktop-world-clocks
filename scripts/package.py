@@ -25,7 +25,7 @@ schema = ET.parse(root / schema_path).getroot().find(f"schema[@id='{schema_id}']
 assert schema.get('id') == schema_id and schema.get('path').startswith('/org/gnome/shell/extensions/'), "Invalid schema identity"
 names = [
     "metadata.json", "extension.js", "prefs.js", "LICENSE",
-    "shared/model.js", "shared/groups.js", "shell/controller.js", "shell/manager.js", "prefs/window.js", "prefs/zones.js", "prefs/images.js",
+    "shared/model.js", "shared/groups.js", "shell/controller.js", "shell/manager.js", "prefs/window.js", "prefs/zones.js", "prefs/images.js", "prefs/about.js",
     schema_path, "schemas/gschemas.compiled",
 ]
 paths = [root / name for name in names]

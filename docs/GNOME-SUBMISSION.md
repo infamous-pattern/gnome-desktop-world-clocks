@@ -41,7 +41,7 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | Conduct/political content | PASS | Inspected runtime names, descriptions, labels, and generated review screenshot; no political messaging or abusive content. |
 | License/attribution | PASS | GPL-2.0-or-later source headers and license text included. No code copied from another extension was identified. |
 | Artwork | PASS for ZIP | No bundled logos, wallpapers, fonts, or images. New review screenshot uses a plain-color desktop; historic prototype/screenshots must not be mistaken for licensed bundled assets. |
-| Minimal archive | PASS | Explicit allowlist of 13 runtime files; no mocks, reports, tests, installers, caches, or npm packages. |
+| Minimal archive | PASS | Explicit allowlist of 14 runtime files; no mocks, reports, tests, installers, caches, or npm packages. |
 | Native UI | PASS | GTK/libadwaita controls and native font, color, and file choosers. |
 
 A catalog search for the proposed name returned no exact match in the top results. This is a preliminary name check, not a reservation or an exhaustive trademark search. Recheck the name during upload.

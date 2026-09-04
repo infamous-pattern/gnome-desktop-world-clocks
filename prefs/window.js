@@ -14,6 +14,7 @@ import {BACKGROUNDS, LAYOUTS, locationName, managedImagePath, MAX_CLOCKS, POSITI
 import {groupSettings, MAX_GROUPS} from '../shared/groups.js';
 import {loadZones} from './zones.js';
 import {loadImage} from './images.js';
+import {aboutPage} from './about.js';
 
 function action(title, widget, subtitle = '') {
     const row = new Adw.ActionRow({title, subtitle, use_markup: false});
@@ -44,8 +45,9 @@ function button(icon, description, callback) {
 }
 
 export class Preferences {
-    constructor(window, settings) {
+    constructor(window, settings, metadata) {
         this._window = window;
+        this._metadata = metadata;
         this._rootSettings = settings;
         this._allSettings = Array.from({length: MAX_GROUPS}, (_, index) => groupSettings(settings, index));
         this._settings = settings;
@@ -63,6 +65,8 @@ export class Preferences {
         this._groupsPage();
         this._selectGroup(0);
         this._timePage();
+        this._about = aboutPage(this._metadata);
+        this._window.add(this._about);
         this._groupCountId = this._rootSettings.connect('changed::group-count', () => this._refreshGroupSelector());
         loadZones(this._cancellable).then(zones => {
             if (this._cancellable.is_cancelled())
@@ -102,6 +106,7 @@ export class Preferences {
         this._settings = null;
         this._allSettings = [];
         this._rootSettings = null;
+        this._metadata = null;
     }
 
     _groupsPage() {
@@ -157,7 +162,7 @@ export class Preferences {
         if (this._changedId)
             this._settings.disconnect(this._changedId);
         this._unbindGroup();
-        for (const page of [this._clockPage, this._appearance, this._time]) {
+        for (const page of [this._clockPage, this._appearance, this._time, this._about]) {
             if (page)
                 this._window.remove(page);
         }
@@ -168,6 +173,8 @@ export class Preferences {
         this._appearancePage();
         if (this._time)
             this._window.add(this._time);
+        if (this._about)
+            this._window.add(this._about);
         this._changedId = this._settings.connect('changed::clocks', () => this._refreshClocks());
         this._refreshClocks();
         if (wasAppearance)

@@ -27,6 +27,7 @@ Native desktop detail, shown with text shadow disabled for clarity. [View the fu
 - Five layouts: inline, aligned time column, large time with label above, two-column grid, and a wrapping horizontal strip.
 - Four corner positions, monitor selection, edge margin, 12/24-hour time, optional seconds, optional date difference, and text shadow.
 - Transparent, solid-color, or local-image backgrounds for the clock group. Text opacity is independent of the background. Images use centered cover cropping.
+- An [About tab](docs/about.png) shows the license, build information, GNOME targets, GitHub repository, issue tracker, and time/privacy details.
 
 Each clock group shrinks to fit when the selected font, labels, and clock count exceed the available desktop space. Grid and strip layouts adapt to monitor width. Monitor `−1` follows the primary monitor; nonnegative values select a monitor by its current index. A disconnected selection falls back to the primary monitor.
 

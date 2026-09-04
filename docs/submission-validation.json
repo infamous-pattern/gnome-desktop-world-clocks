@@ -1,14 +1,15 @@
 {
   "date": "2026-09-04",
-  "archive_sha256": "e29075e88430f1a354badabcc25b31ffd5b4ac169eb6fc6867672f22eb333c24",
+  "archive_sha256": "db43f0eacf5dcf636d6b691c9efd2948f58de6cc7804f8a59ce906609d66c4a4",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
     "extension.js": "1269acd041c0539a29b8abcfda51d5cc4ad92804459dcea595ffcb7ff0a196cd",
     "metadata.json": "598b4e9e0a9119733e184c634607f3c76d7c65cd2dc9ada8fb48089f6d0fc218",
+    "prefs/about.js": "241a9e9a3b6774dc76508744e6fa8468a5ade9e49da5c9b1797e68a70193314c",
     "prefs/images.js": "bf78c1fa082a3bb5e3af17e3919a5d9705fe988f2f5ebe695f8e99c674b5137b",
-    "prefs/window.js": "b632489cce8d1c68f3acfd4b8e6d0b30ea78e827f6d1438c8b5eef4cc18490fa",
+    "prefs/window.js": "2d2ff76fdb25b41a9a2a62e423ccfc46154b8b7a371b4981c974f4d613988f8f",
     "prefs/zones.js": "06e38733a232b68be734a4df7c340e3e98671ad9d6b9d3eb31bbdfccfb29a22a",
-    "prefs.js": "f3cdf49fffaee907cb6638b7eac1efda818c8c998aea2f1acb16c4123813d9c4",
+    "prefs.js": "d515ecf70aa1c06d92017739872c3c031422168819853c3f184e4a93fd381bb3",
     "schemas/gschemas.compiled": "9291ef12c611946852ed73484212ff53bce15660d99d2d804596366cdb9388b3",
     "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f2e4ae3562992146e88e661e0952687e71f890d88849b51cca8ef1715097710c",
     "shared/groups.js": "498175d4bfa2ecabc6327abb1e3a377bcb33af0c5a9b20dff0bb527aaded5afe",
@@ -31,21 +32,21 @@
       "environment": "Fedora 43 rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Four-group build before the three-space Inline gap adjustment."
+      "scope_note": "Four-group build before the Inline spacing and About-tab updates."
     },
     {
       "version": "50.4",
       "environment": "Fedora 44 isolated Wayland session",
       "mode": "full automated suite",
       "result": "pass",
-      "scope_note": "Full suite passed after the three-space Inline gap adjustment."
+      "scope_note": "Full suite passed with the About tab and Inline spacing update."
     },
     {
       "version": "51.beta",
       "environment": "Fedora development rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Four-group build before the three-space Inline gap adjustment."
+      "scope_note": "Four-group build before the Inline spacing and About-tab updates."
     }
   ],
   "remaining": [
@@ -55,5 +56,5 @@
     "Physical-session checks",
     "Final GNOME 51 release validation"
   ],
-  "follow_up": "2026-09-04: add three spaces after the combined clock name/abbreviation in Inline layout; lint and full GNOME 50.4 suite pass. Earlier model, security, and 49.9/51.beta core checks apply to the preceding four-group build."
+  "follow_up": "2026-09-04: add native About preferences page with license, metadata version/targets, project/issues links and time/privacy information. Lint and full GNOME 50.4 suite pass; native About screenshot visually checked. Earlier model/security and 49.9/51.beta core results are retained with their scope."
 }
