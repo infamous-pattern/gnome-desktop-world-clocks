@@ -12,7 +12,7 @@ User-facing name: **Desktop World Clocks**.
 1. Support up to ten independently selected time zones, including multiple labels for the same zone.
 2. Offer the complete current system time-zone database, UTC, and recognized aliases. Persist zone identifiers, not hard-coded offsets or abbreviations.
 3. Allow an optional custom description for each clock. If omitted or cleared, use the selected time zone’s city/location name (for example, `America/New_York` becomes `New York`). Automatically filled descriptions follow subsequent zone selections; user-written descriptions are preserved. The preview accepts up to 60 characters and wraps long text.
-4. Provide installed-font selection, size, and color. Version 01 applies appearance to all clocks together.
+4. Provide a searchable chooser for all fonts installed and available to GNOME, plus shared font size and clock opacity (0–100%). Offer a global font color with optional per-clock color overrides. Each clock defaults to “Use global font color”; changing the global color affects only clocks that inherit it. Restoring inheritance discards that clock’s override. Opacity applies to the complete clock text, including its shadow, independently of color.
 5. Derive all clock readings from one synchronized system clock. Apply each selected zone's daylight-saving and historical rule changes through the system time-zone database.
 6. Support nearby NTP sources and a specified local/custom NTP server, with truthful synchronization status.
 
@@ -21,11 +21,11 @@ User-facing name: **Desktop World Clocks**.
 - Eight starting locations match the supplied reference: Los Angeles, Austin, London, Vienna, Pune, Singapore, Japan, and Melbourne.
 - Time is live device time; displayed abbreviations follow the current date, rather than copying the reference's seasonal abbreviations.
 - Add, rename, change zone, remove, and reorder clocks. Adding is disabled at ten.
-- Font, 14–48 px size, text color, 12/24-hour display, optional seconds, optional date difference relative to the device, and text shadow.
+- Searchable installed-font chooser, 14–48 px size, 0–100% clock opacity, global color and per-clock color overrides, 12/24-hour display, optional seconds, optional date difference relative to the device, and text shadow.
 - Inline, aligned-column, and stacked layouts; four desktop corner anchors.
 - Source selection is only a preview preference. No network requests or system changes occur.
 
-The embedded list contains 597 system time-zone identifiers and aliases captured on 2026-09-04. The preview filters out entries unsupported by the browser's time-zone engine. This snapshot is not a replacement for a native, dynamically enumerated system zone database. The prototype font suggestions were populated from installed font families; browsers can fall back when a requested font is unavailable.
+The embedded list contains 597 system time-zone identifiers and aliases captured on 2026-09-04. The preview filters out entries unsupported by the browser's time-zone engine. This snapshot is not a replacement for a native, dynamically enumerated system zone database. The prototype font list was refreshed from all installed font families on the development GNOME system; browsers can fall back when a requested font is unavailable.
 
 ## Synchronization design
 
@@ -46,7 +46,7 @@ The finished product must distinguish synchronized, unsynchronized, unavailable,
 ## GNOME implementation considerations
 
 - Initial development target: GNOME Shell 50, observed locally as 50.4. Other versions need explicit compatibility testing before being declared supported.
-- Native preferences should use GTK/libadwaita with a system font chooser and searchable time-zone picker.
+- Native preferences should use GTK/libadwaita with a system font chooser and searchable time-zone picker. Enumerate fonts dynamically from the GNOME font system, including user-installed and system-wide fonts; do not ship the preview’s font snapshot as a fixed production list.
 - The overlay should sit above wallpaper and below normal application windows, without intercepting ordinary desktop input.
 - Persist ordered clock records and appearance in GSettings.
 - Use one update timer; release timers, signals, actors, and service resources when disabled.
@@ -55,7 +55,7 @@ The finished product must distinguish synchronized, unsynchronized, unavailable,
 
 ## Choices to refine
 
-- Keep one shared appearance or allow optional per-clock overrides?
+- Shared font, size, and opacity are selected; per-clock color overrides are now required.
 - Prefer inline rows or aligned time columns?
 - Add drag-to-position, monitor selection, or a subtle background panel?
 - Should next/previous-day indicators be enabled by default?
@@ -63,7 +63,7 @@ The finished product must distinguish synchronized, unsynchronized, unavailable,
 
 ## Preview verification
 
-The preview was opened and visually inspected in a browser. Additions to ten clocks, the disabled add control at capacity, custom descriptions, quarter-hour zones, font changes, 12-hour time, aligned layout, and date differences were exercised. The desktop layout and narrow stacked presentation were inspected. These checks validate the design prototype, not GNOME integration or NTP accuracy.
+The preview was opened and visually inspected in a browser. Additions to ten clocks, the disabled add control at capacity, custom descriptions, quarter-hour zones, font changes, 12-hour time, aligned layout, and date differences were exercised. The desktop layout and narrow stacked presentation were inspected. The updated font selector was verified against 505 installed font families. Font filtering, font selection, opacity, per-clock colors surviving global color changes, and restoring global color inheritance were also verified. These checks validate the design prototype, not GNOME integration or NTP accuracy.
 
 ## References
 

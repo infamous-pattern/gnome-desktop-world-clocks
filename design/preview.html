@@ -88,17 +88,22 @@
             <label class="wc-field">Time zone<input type="text" data-zone list="wc-zone-options" placeholder="e.g. Asia/Kolkata" autocomplete="off" required></label>
             <datalist id="wc-zone-options"></datalist>
             <label class="wc-field">Description (optional)<input type="text" data-description placeholder="Uses the selected location name" maxlength="60"></label>
+            <label class="wc-check"><input type="checkbox" data-inherit-color checked>Use global font color</label>
+            <label class="wc-field">This clock’s font color<input type="color" data-clock-color value="#ffffff" disabled></label>
             <div class="wc-error" data-error role="alert"></div>
             <div class="wc-actions"><button type="button" data-save class="wc-button wc-primary">Save clock</button><button type="button" class="wc-button" data-cancel>Cancel</button><button type="button" class="wc-button" data-remove>Remove</button></div>
           </div>
           <div class="wc-list" data-clock-list></div>
-          <div class="wc-note">Select a clock to rename it or change its time zone. Arrows change the desktop order.</div>
+          <div class="wc-note">Select a clock to edit its name, time zone, or font color. Arrows change the desktop order.</div>
           <div class="wc-note" data-zone-count></div>
         </div>
         <div class="wc-pane" data-pane="appearance" hidden>
-          <label class="wc-field">Font<input type="text" data-font list="wc-font-options" value="Adwaita Sans" autocomplete="off"></label><datalist id="wc-font-options"></datalist>
+          <label class="wc-field">Search installed fonts<input type="text" data-font-search placeholder="Filter font names…" autocomplete="off"></label>
+          <label class="wc-field">Installed font<select data-font aria-describedby="wc-font-count"></select></label>
+          <div class="wc-note" id="wc-font-count" data-font-count aria-live="polite"></div>
           <label class="wc-field">Size <span data-size-label>26 px</span><input type="range" data-size min="14" max="48" value="26"></label>
-          <div class="wc-pair"><label class="wc-field">Text color<input type="color" data-color value="#ffffff"></label><label class="wc-field">Time format<select data-format><option value="24">24-hour</option><option value="12">12-hour</option></select></label></div>
+          <label class="wc-field">Clock opacity <span data-opacity-label>100%</span><input type="range" data-opacity min="0" max="100" value="100"></label>
+          <div class="wc-pair"><label class="wc-field">Global font color<input type="color" data-color value="#ffffff"></label><label class="wc-field">Time format<select data-format><option value="24">24-hour</option><option value="12">12-hour</option></select></label></div>
           <label class="wc-field">Layout<select data-layout><option value="classic">Inline · like your reference</option><option value="aligned">Aligned time column</option><option value="stacked">Large time, label above</option></select></label>
           <label class="wc-field">Desktop corner<select data-position><option value="top-left">Top left</option><option value="top-right">Top right</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option></select></label>
           <hr class="wc-rule">
@@ -106,7 +111,7 @@
           <label class="wc-check"><input type="checkbox" data-seconds>Show seconds</label>
           <label class="wc-check"><input type="checkbox" data-day>Show date difference from this device</label>
           <label class="wc-check"><input type="checkbox" data-shadow checked>Text shadow for readability</label>
-          <div class="wc-note">Appearance applies to all clocks. Installed fonts render on this device; unavailable fonts use a fallback.</div>
+          <div class="wc-note">Font, size, and opacity apply to all clocks. Individual clock colors override the global color. Font choices come from this GNOME system; unavailable fonts use a fallback when previewed elsewhere.</div>
         </div>
         <div class="wc-pane" data-pane="sync" hidden>
           <div class="wc-status"><span class="wc-sub">Synchronization</span><strong>Preview · status unavailable</strong><span class="wc-sub">Clocks use this device’s time. NTP is not connected in this design preview.</span></div>
@@ -129,7 +134,7 @@
     const root=document.getElementById('worldclock-concept');
     const q=s=>root.querySelector(s), qa=s=>Array.from(root.querySelectorAll(s));
     const clocks=[['Los Angeles','America/Los_Angeles'],['Austin','America/Chicago'],['London','Europe/London'],['Vienna','Europe/Vienna'],['Pune','Asia/Kolkata'],['Singapore','Asia/Singapore'],['Japan','Asia/Tokyo'],['Melbourne','Australia/Melbourne']].map(([label,zone])=>({label,zone}));
-    const state={font:'Adwaita Sans',size:26,color:'#ffffff',format:'24',layout:'classic',position:'top-left',abbr:true,seconds:false,day:false,shadow:true};
+    const state={font:'Adwaita Sans',size:26,opacity:100,color:'#ffffff',format:'24',layout:'classic',position:'top-left',abbr:true,seconds:false,day:false,shadow:true};
     let editing=null;
     let descriptionIsAutomatic=true;
     const locationName=zone=>zone.split('/').pop().replaceAll('_',' ');
@@ -138,7 +143,17 @@
     const zones=candidates.filter(zone=>{try {new Intl.DateTimeFormat('en',{timeZone:zone});return true;}catch{return false;}});
     const fonts=JSON.parse(q('#wc-font-data').textContent);
     for(const zone of zones){const o=document.createElement('option');o.value=zone;q('#wc-zone-options').append(o);}
-    for(const font of fonts){const o=document.createElement('option');o.value=font;q('#wc-font-options').append(o);}
+    function renderFonts(){
+      const search=q('[data-font-search]').value.trim().toLocaleLowerCase();
+      const matches=fonts.filter(font=>font.toLocaleLowerCase().includes(search));
+      const visible=matches.includes(state.font)?matches:[state.font,...matches];
+      const select=q('[data-font]');select.replaceChildren();
+      for(const font of visible){const option=document.createElement('option');option.value=font;option.textContent=font+(search&&!matches.includes(font)?' (current)':'');select.append(option);}
+      select.value=state.font;
+      q('[data-font-count]').textContent=search?matches.length+' matching fonts · '+fonts.length+' installed':fonts.length+' installed font families';
+    }
+    q('[data-font-search]').oninput=renderFonts;
+    renderFonts();
     q('[data-zone-count]').textContent=zones.length+' supported time zone identifiers, including aliases and UTC. Daylight saving adjusts automatically.';
     const feedback=msg=>q('[data-feedback]').textContent=msg;
     function parts(zone,date){return new Intl.DateTimeFormat('en-GB',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date).reduce((a,p)=>(a[p.type]=p.value,a),{});}
@@ -155,7 +170,7 @@
       q('[data-top-date]').textContent=new Intl.DateTimeFormat('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}).format(now);
       const dest=q('[data-clocks]');dest.replaceChildren();
       for(const c of clocks){
-        const line=document.createElement('div');line.className='wc-clock';
+        const line=document.createElement('div');line.className='wc-clock';line.style.color=c.color||state.color;
         const name=document.createElement('span');name.className='wc-name';name.textContent=c.label+(state.abbr?' '+abbreviation(c.zone,now):'')+(state.layout==='classic'?' – ':'');
         const time=document.createElement('time');time.dateTime=now.toISOString();time.textContent=new Intl.DateTimeFormat('en-GB',{timeZone:c.zone,hour:'2-digit',minute:'2-digit',...(state.seconds?{second:'2-digit'}:{}),...(state.format==='12'?{hour12:true}:{hourCycle:'h23'})}).format(now);
         line.append(name,time);
@@ -165,8 +180,8 @@
       if(!clocks.length){const empty=document.createElement('span');empty.textContent='Add your first clock';empty.style.fontSize='18px';dest.append(empty);}
     }
     function renderStyle(){
-      const el=q('[data-clocks]');el.style.fontFamily='"'+state.font.replace(/["\\]/g,'')+'", sans-serif';el.style.fontSize=state.size+'px';el.style.color=state.color;el.dataset.arrangement=state.layout;el.style.textShadow=state.shadow?'0 2px 5px #000b':'none';el.style.textAlign=state.position.endsWith('right')?'right':'left';q('.wc-workspace').style.alignItems=state.position.startsWith('bottom')?'flex-end':'flex-start';
-      q('[data-size-label]').textContent=state.size+' px';
+      const el=q('[data-clocks]');el.style.fontFamily='"'+state.font.replace(/["\\]/g,'')+'", sans-serif';el.style.fontSize=state.size+'px';el.style.color=state.color;el.style.opacity=state.opacity/100;el.dataset.arrangement=state.layout;el.style.textShadow=state.shadow?'0 2px 5px #000b':'none';el.style.textAlign=state.position.endsWith('right')?'right':'left';q('.wc-workspace').style.alignItems=state.position.startsWith('bottom')?'flex-end':'flex-start';
+      q('[data-size-label]').textContent=state.size+' px';q('[data-opacity-label]').textContent=state.opacity+'%';if(q('[data-inherit-color]').checked)q('[data-clock-color]').value=state.color;
       renderTime();
     }
     function renderList(){
@@ -180,15 +195,16 @@
         list.append(row);
       });
     }
-    function openEditor(index){editing=index;descriptionIsAutomatic=index===-1||(clocks[index].autoDescription??clocks[index].label===locationName(clocks[index].zone));q('[data-editor]').hidden=false;q('[data-description]').value=index===-1?'':clocks[index].label;q('[data-zone]').value=index===-1?'':clocks[index].zone;q('[data-remove]').hidden=index===-1;q('[data-error]').textContent='';q('[data-zone]').focus();}
+    function openEditor(index){editing=index;descriptionIsAutomatic=index===-1||(clocks[index].autoDescription??clocks[index].label===locationName(clocks[index].zone));q('[data-editor]').hidden=false;q('[data-description]').value=index===-1?'':clocks[index].label;q('[data-zone]').value=index===-1?'':clocks[index].zone;q('[data-remove]').hidden=index===-1;q('[data-error]').textContent='';const ownColor=index===-1?null:clocks[index].color;q('[data-inherit-color]').checked=!ownColor;q('[data-clock-color]').disabled=!ownColor;q('[data-clock-color]').value=ownColor||state.color;q('[data-zone]').focus();}
     function closeEditor(){editing=null;q('[data-editor]').hidden=true;}
     q('[data-add]').onclick=()=>{if(clocks.length<10)openEditor(-1);};q('[data-cancel]').onclick=closeEditor;
     q('[data-remove]').onclick=()=>{if(editing!==null&&editing>=0){const name=clocks[editing].label;clocks.splice(editing,1);closeEditor();renderList();renderTime();feedback(name+' removed from the preview.');}};
+    q('[data-inherit-color]').onchange=()=>{q('[data-clock-color]').disabled=q('[data-inherit-color]').checked;if(q('[data-inherit-color]').checked)q('[data-clock-color]').value=state.color;};
     q('[data-description]').oninput=()=>{descriptionIsAutomatic=!q('[data-description]').value.trim();};
     q('[data-zone]').oninput=q('[data-zone]').onchange=()=>{const zone=q('[data-zone]').value.trim();if(zones.includes(zone)&&(descriptionIsAutomatic||!q('[data-description]').value.trim())){q('[data-description]').value=locationName(zone);descriptionIsAutomatic=true;}};
-    q('[data-save]').onclick=e=>{e.preventDefault();const zone=q('[data-zone]').value.trim(),description=q('[data-description]').value.trim(),label=description||locationName(zone),autoDescription=descriptionIsAutomatic||!description;if(!zones.includes(zone)){q('[data-error]').textContent='Choose a valid time zone from the list.';return;}if(editing===-1){if(clocks.length>=10)return;clocks.push({label,zone,autoDescription});}else if(editing!==null)clocks[editing]={label,zone,autoDescription};closeEditor();renderList();renderTime();feedback(label+' saved in this preview.');};
+    q('[data-save]').onclick=e=>{e.preventDefault();const zone=q('[data-zone]').value.trim(),description=q('[data-description]').value.trim(),label=description||locationName(zone),autoDescription=descriptionIsAutomatic||!description,color=q('[data-inherit-color]').checked?null:q('[data-clock-color]').value;if(!zones.includes(zone)){q('[data-error]').textContent='Choose a valid time zone from the list.';return;}if(editing===-1){if(clocks.length>=10)return;clocks.push({label,zone,autoDescription,color});}else if(editing!==null)clocks[editing]={label,zone,autoDescription,color};closeEditor();renderList();renderTime();feedback(label+' saved in this preview.');};
     qa('[data-tab]').forEach(button=>button.onclick=()=>{qa('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));qa('[data-pane]').forEach(p=>p.hidden=p.dataset.pane!==button.dataset.tab);});
-    for(const key of ['font','size','color','format','layout','position','abbr','seconds','day','shadow']){const input=q('[data-'+key+']');input.addEventListener('input',()=>{state[key]=input.type==='checkbox'?input.checked:key==='size'?+input.value:input.value;renderStyle();});}
+    for(const key of ['font','size','opacity','color','format','layout','position','abbr','seconds','day','shadow']){const input=q('[data-'+key+']');input.addEventListener('input',()=>{state[key]=input.type==='checkbox'?input.checked:['size','opacity'].includes(key)?+input.value:input.value;renderStyle();});}
     q('[data-source]').onchange=()=>{const mode=q('[data-source]').value;q('[data-server-field]').hidden=mode!=='local';q('[data-source-note]').textContent=mode==='local'?'Prefer your specified local or custom server, with a nearby public pool available as fallback.':mode==='system'?'Use the time sources already configured by your operating system.':'Use a geographically nearby pool and let the system time service select a reliable source. Exact nearest-server selection is not guaranteed.';feedback('Time-source preference changed in the preview. System settings are unchanged.');};
     renderList();renderStyle();
     const timer=setInterval(()=>{if(!root.isConnected){clearInterval(timer);return;}renderTime();},1000);
