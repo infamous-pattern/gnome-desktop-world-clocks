@@ -18,6 +18,9 @@ function assert(value, message) {
 export async function run() {
     Main.overview.hide();
     await Scripting.sleep(1000);
+    // Extension loading can finish after the compositor's startup notification.
+    for (let attempt = 0; attempt < 50 && !Main.extensionManager.lookup(UUID)?.stateObj?._controller; attempt++)
+        await Scripting.sleep(100);
     const extension = Main.extensionManager.lookup(UUID);
     assert(extension, 'Extension discovered');
     assert(!extension.error, `Extension startup: ${extension.error}`);
@@ -53,6 +56,30 @@ export async function run() {
     await Scripting.sleep(100);
     assert(controller._items[0].name.text === 'Los Angeles', 'Per-clock abbreviation and default description');
     assert(controller._items[0].cell.get_style().includes('#00ff00'), 'Per-clock color');
+
+    // Unequal time widths must end at the same column edge, including day labels.
+    controller._stopTimer();
+    for (const [index, item] of controller._items.entries()) {
+        item.time.set_text(index % 2 ? '11:11' : '8:58 PM');
+        item.day.set_text(index % 2 ? '+1 day' : '');
+        item.day.visible = Boolean(item.day.text);
+    }
+    await Scripting.sleep(100);
+    const rightEdge = label => {
+        const text = label.clutter_text;
+        const [, logical] = text.get_layout().get_pixel_extents();
+        const scale = text.get_transformed_size()[0] / text.width;
+        return text.get_transformed_position()[0] + (logical.x + logical.width) * scale;
+    };
+    const edge = rightEdge(controller._items[0].time);
+    for (const item of controller._items) {
+        assert(Math.abs(rightEdge(item.time) - edge) < 1, 'Aligned times share a right edge');
+        if (item.day.visible)
+            assert(Math.abs(rightEdge(item.day) - edge) < 1, 'Day labels share the time column right edge');
+    }
+    print('PASS: aligned times and day labels share a right edge');
+    controller._update();
+    controller._syncTimer();
 
     Main.overview.show();
     await Scripting.sleep(500);
@@ -126,6 +153,15 @@ export async function run() {
         const [detailCaptured] = await new Shell.Screenshot().screenshot_area(0, 32, 480, 384, detailStream);
         assert(detailCaptured, 'Desktop detail screenshot captured successfully');
         detailStream.close(null);
+        settings.set_string('layout', 'aligned');
+        settings.set_boolean('use-12-hour', true);
+        await Scripting.sleep(200);
+        const alignedStream = Gio.File.new_for_path(`${resultDir}/desktop-aligned.png`).replace(null, false, Gio.FileCreateFlags.NONE, null);
+        const [alignedCaptured] = await new Shell.Screenshot().screenshot_area(0, 32, 720, 384, alignedStream);
+        assert(alignedCaptured, 'Aligned layout screenshot captured successfully');
+        alignedStream.close(null);
+        settings.reset('layout');
+        settings.reset('use-12-hour');
         settings.reset('text-shadow');
     }
     const process = Gio.Subprocess.new(['gjs', '-m', `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/tests/prefs.js`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);

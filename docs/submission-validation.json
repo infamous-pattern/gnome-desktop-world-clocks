@@ -1,6 +1,6 @@
 {
   "date": "2026-09-04",
-  "archive_sha256": "3442602bc05c5c0fdb9854fd7835e8a296c30ff83bcb65fa75e6dd5c091dc27b",
+  "archive_sha256": "fc124d367771a7f18e6c43e3e91403920e4998865bb3c2ff88f17e80c12813e8",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
     "extension.js": "5364c4bde4d85cb8036de602d340db85cf1e39e15d7bfbd4dd82da2ec98a9d64",
@@ -12,21 +12,23 @@
     "schemas/gschemas.compiled": "b0d2d87e8e5b823b5cffe74c929186d56c6c83139c91f097f63b155b06210ea7",
     "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f3e62fe0b05fbdb7acc5c2c9af1568fb702dee01234339581b998e09624188c3",
     "shared/model.js": "2cb8981854fc7ee8d5918fdca3c4d0c4de5ed26d1c4377e6c0ff2284ca975a25",
-    "shell/controller.js": "a7d74f2c18e2264202fc2e27c311d4bc8e827c3b140c5a038bf02ab3de3b447a"
+    "shell/controller.js": "5bfe297f3557f7ce4b1969b6bf9199e2e544ba7ac5444276c238122d1414ee14"
   },
   "validation": {
     "model_checks": 25,
     "adversarial_checks": 27,
     "image_rejection_and_cancellation_checks": 7,
     "npm_known_vulnerabilities": 0,
-    "working_tree_secret_findings": 0
+    "working_tree_secret_findings": 0,
+    "aligned_text_right_edge_check": "pass on GNOME 50.4; unequal time widths and day labels"
   },
   "gnome_runtime": [
     {
       "version": "49.9",
       "environment": "Fedora 43 rootless container",
       "mode": "core-only",
-      "result": "pass"
+      "result": "pass",
+      "scope_note": "Prior core result before the right-alignment fix; this change has not been rerun on this version."
     },
     {
       "version": "50.4",
@@ -38,7 +40,8 @@
       "version": "51.beta",
       "environment": "Fedora development rootless container",
       "mode": "core-only",
-      "result": "pass"
+      "result": "pass",
+      "scope_note": "Prior core result before the right-alignment fix; this change has not been rerun on this version."
     }
   ],
   "remaining": [
@@ -47,5 +50,6 @@
     "GNOME 49 and 51 image tests",
     "Physical-session checks",
     "Final GNOME 51 release validation"
-  ]
+  ],
+  "follow_up": "2026-09-04: right-align aligned-layout time/day labels; full GNOME 50.4 suite, lint, 25 model checks, and 27 adversarial checks pass."
 }

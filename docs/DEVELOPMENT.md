@@ -34,6 +34,8 @@ Use Node.js 22.13+ for ESLint 10; the lockfile pins dependencies. `npm test` use
 
 ## Remaining release gates
 
+The owner's ongoing physical-desktop checks and the aligned-column correction are tracked in [DESKTOP-ACCEPTANCE.md](DESKTOP-ACCEPTANCE.md).
+
 Full GNOME 49 and 51 runtime validation is **pending**; the follow-up core container results below cover a subset. Run the same tests on those releases before upgrading their status to verified; test a final GNOME 51 build when available. Declaring versions in metadata is not proof of compatibility.
 
 On physical desktops, verify suspend/resume, lock/unlock, full-screen applications, monitor hotplug, multiple-monitor selection, fractional/HiDPI scaling, desktop-icon extensions, wallpaper changes, and image selection through the file portal. Confirm the operating system's actual time status independently. The isolated tests cover Overview and timer ownership, but do not establish these hardware/session behaviors or real NTP accuracy.
@@ -70,3 +72,9 @@ podman run --rm --network=none --cap-drop=ALL --security-opt=no-new-privileges \
 ```
 
 The private bus is a test transport, not a running systemd/logind/time service. These containers do not validate suspend, lock, real time synchronization, or physical monitor behavior. Complete those checks in a normal desktop or VM. Container tags are local test tools and are excluded from the extension ZIP.
+
+## Aligned-column follow-up (2026-09-04)
+
+Time and day labels now use end alignment within the shared time column. A regression check measures the rendered text's right edges with unequal time widths and visible day labels. The full GNOME 50.4 suite passes with this correction, along with lint, 25 model checks, and 27 adversarial checks. The same regression check fails against the previous controller, confirming it detects the reported left-alignment behavior. The earlier 49.9/51.beta core results predate this correction.
+
+One initial isolated run crashed in GNOME's native text-shadow paint pipeline (`st_label_paint_node`); a subsequent attempt exposed a startup timing assumption. The harness now waits up to five seconds for the extension controller after Shell startup. Two subsequent full runs passed, including shadow rendering. The native crash was not reproduced and is not claimed to be fixed by the startup wait; investigate further if it recurs.

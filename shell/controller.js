@@ -125,6 +125,8 @@ export class ClockController {
                 name.set_style(`color: ${record.color || globalColor};`);
                 name.set_width(Math.min(width * 0.6, size * this._scale * 16));
                 grid.attach(name, 0, index, 1, 1);
+                time.x_align = Clutter.ActorAlign.END;
+                day.x_align = Clutter.ActorAlign.END;
                 cell.add_child(time);
             } else {
                 name.set_style(`font-size: ${Math.max(11, Math.round(size * 0.65))}px;`);
