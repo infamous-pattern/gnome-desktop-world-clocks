@@ -9,7 +9,7 @@ Open `design/preview.html` in a browser to explore the design. It is self-contai
 ## Try the preview
 
 - Add up to ten clocks and choose a time zone. Descriptions default to the selected location name, or you can write your own.
-- Select an existing clock to edit or remove it; use the arrows to reorder clocks.
+- Select an existing clock to edit or remove it, or hide its time-zone abbreviation; use the arrows to reorder clocks.
 - Search all installed fonts; change size and opacity; choose a global font color or override it per clock. Adjust time format, placement, and text shadow.
 - Compare five layouts: reference-style inline clocks, aligned columns, large time, a two-column grid, and a wrapping horizontal strip.
 - Choose a transparent, solid-color, or local-image background for the clock area.

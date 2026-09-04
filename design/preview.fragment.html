@@ -99,13 +99,15 @@
             <label class="wc-field">Time zone<input type="text" data-zone list="wc-zone-options" placeholder="e.g. Asia/Kolkata" autocomplete="off" required></label>
             <datalist id="wc-zone-options"></datalist>
             <label class="wc-field">Description (optional)<input type="text" data-description placeholder="Uses the selected location name" maxlength="60"></label>
+            <label class="wc-check"><input type="checkbox" data-clock-abbr checked>Show time zone abbreviation</label>
+            <div class="wc-note" data-abbr-note hidden>Abbreviations are currently disabled in Appearance. This clock’s choice will apply when they are enabled.</div>
             <label class="wc-check"><input type="checkbox" data-inherit-color checked>Use global font color</label>
             <label class="wc-field">This clock’s font color<input type="color" data-clock-color value="#ffffff" disabled></label>
             <div class="wc-error" data-error role="alert"></div>
             <div class="wc-actions"><button type="button" data-save class="wc-button wc-primary">Save clock</button><button type="button" class="wc-button" data-cancel>Cancel</button><button type="button" class="wc-button" data-remove>Remove</button></div>
           </div>
           <div class="wc-list" data-clock-list></div>
-          <div class="wc-note">Select a clock to edit its name, time zone, or font color. Arrows change the desktop order.</div>
+          <div class="wc-note">Select a clock to edit its name, time zone, abbreviation, or font color. Arrows change the desktop order.</div>
           <div class="wc-note" data-zone-count></div>
         </div>
         <div class="wc-pane" data-pane="appearance" hidden>
@@ -125,7 +127,7 @@
           </div>
           <label class="wc-field">Desktop corner<select data-position><option value="top-left">Top left</option><option value="top-right">Top right</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option></select></label>
           <hr class="wc-rule">
-          <label class="wc-check"><input type="checkbox" data-abbr checked>Show time zone abbreviation</label>
+          <label class="wc-check"><input type="checkbox" data-abbr checked>Enable time zone abbreviations</label>
           <label class="wc-check"><input type="checkbox" data-seconds>Show seconds</label>
           <label class="wc-check"><input type="checkbox" data-day>Show date difference from this device</label>
           <label class="wc-check"><input type="checkbox" data-shadow checked>Text shadow for readability</label>
@@ -189,7 +191,7 @@
       const dest=q('[data-clocks]');dest.replaceChildren();
       for(const c of clocks){
         const line=document.createElement('div');line.className='wc-clock';line.style.color=c.color||state.color;
-        const name=document.createElement('span');name.className='wc-name';name.textContent=c.label+(state.abbr?' '+abbreviation(c.zone,now):'')+(state.layout==='classic'?' – ':'');
+        const name=document.createElement('span');name.className='wc-name';name.textContent=c.label+(state.abbr&&c.showAbbr!==false?' '+abbreviation(c.zone,now):'')+(state.layout==='classic'?' – ':'');
         const time=document.createElement('time');time.dateTime=now.toISOString();time.textContent=new Intl.DateTimeFormat('en-GB',{timeZone:c.zone,hour:'2-digit',minute:'2-digit',...(state.seconds?{second:'2-digit'}:{}),...(state.format==='12'?{hour12:true}:{hourCycle:'h23'})}).format(now);
         line.append(name,time);
         if(state.day){const delta=ordinal(parts(c.zone,now))-ordinal(parts(Intl.DateTimeFormat().resolvedOptions().timeZone,now));if(delta){const day=document.createElement('small');day.textContent=(delta>0?'+':'')+delta+' day'+(Math.abs(delta)>1?'s':'');line.append(day);}}
@@ -200,7 +202,7 @@
     function renderStyle(){
       const surface=q('[data-surface]');surface.dataset.background=state.background;surface.style.backgroundColor=state.background==='solid'?state.backgroundColor:'transparent';surface.style.backgroundImage=state.background==='image'&&state.backgroundImage?'url("'+state.backgroundImage+'")':'none';q('[data-background-color-field]').hidden=state.background!=='solid';q('[data-background-image-field]').hidden=state.background!=='image';
       const el=q('[data-clocks]');el.style.fontFamily='"'+state.font.replace(/["\\]/g,'')+'", sans-serif';el.style.fontSize=state.size+'px';el.style.color=state.color;el.style.opacity=state.opacity/100;el.dataset.arrangement=state.layout;el.style.textShadow=state.shadow?'0 2px 5px #000b':'none';el.style.textAlign=state.position.endsWith('right')?'right':'left';q('.wc-workspace').style.alignItems=state.position.startsWith('bottom')?'flex-end':'flex-start';
-      q('[data-size-label]').textContent=state.size+' px';q('[data-opacity-label]').textContent=state.opacity+'%';if(q('[data-inherit-color]').checked)q('[data-clock-color]').value=state.color;
+      q('[data-size-label]').textContent=state.size+' px';q('[data-opacity-label]').textContent=state.opacity+'%';q('[data-abbr-note]').hidden=state.abbr;if(q('[data-inherit-color]').checked)q('[data-clock-color]').value=state.color;
       renderTime();
     }
     function renderList(){
@@ -214,14 +216,14 @@
         list.append(row);
       });
     }
-    function openEditor(index){editing=index;descriptionIsAutomatic=index===-1||(clocks[index].autoDescription??clocks[index].label===locationName(clocks[index].zone));q('[data-editor]').hidden=false;q('[data-description]').value=index===-1?'':clocks[index].label;q('[data-zone]').value=index===-1?'':clocks[index].zone;q('[data-remove]').hidden=index===-1;q('[data-error]').textContent='';const ownColor=index===-1?null:clocks[index].color;q('[data-inherit-color]').checked=!ownColor;q('[data-clock-color]').disabled=!ownColor;q('[data-clock-color]').value=ownColor||state.color;q('[data-zone]').focus();}
+    function openEditor(index){editing=index;descriptionIsAutomatic=index===-1||(clocks[index].autoDescription??clocks[index].label===locationName(clocks[index].zone));q('[data-editor]').hidden=false;q('[data-description]').value=index===-1?'':clocks[index].label;q('[data-zone]').value=index===-1?'':clocks[index].zone;q('[data-remove]').hidden=index===-1;q('[data-error]').textContent='';const ownColor=index===-1?null:clocks[index].color;q('[data-inherit-color]').checked=!ownColor;q('[data-clock-color]').disabled=!ownColor;q('[data-clock-color]').value=ownColor||state.color;q('[data-clock-abbr]').checked=index===-1||clocks[index].showAbbr!==false;q('[data-abbr-note]').hidden=state.abbr;q('[data-zone]').focus();}
     function closeEditor(){editing=null;q('[data-editor]').hidden=true;}
     q('[data-add]').onclick=()=>{if(clocks.length<10)openEditor(-1);};q('[data-cancel]').onclick=closeEditor;
     q('[data-remove]').onclick=()=>{if(editing!==null&&editing>=0){const name=clocks[editing].label;clocks.splice(editing,1);closeEditor();renderList();renderTime();feedback(name+' removed from the preview.');}};
     q('[data-inherit-color]').onchange=()=>{q('[data-clock-color]').disabled=q('[data-inherit-color]').checked;if(q('[data-inherit-color]').checked)q('[data-clock-color]').value=state.color;};
     q('[data-description]').oninput=()=>{descriptionIsAutomatic=!q('[data-description]').value.trim();};
     q('[data-zone]').oninput=q('[data-zone]').onchange=()=>{const zone=q('[data-zone]').value.trim();if(zones.includes(zone)&&(descriptionIsAutomatic||!q('[data-description]').value.trim())){q('[data-description]').value=locationName(zone);descriptionIsAutomatic=true;}};
-    q('[data-save]').onclick=e=>{e.preventDefault();const zone=q('[data-zone]').value.trim(),description=q('[data-description]').value.trim(),label=description||locationName(zone),autoDescription=descriptionIsAutomatic||!description,color=q('[data-inherit-color]').checked?null:q('[data-clock-color]').value;if(!zones.includes(zone)){q('[data-error]').textContent='Choose a valid time zone from the list.';return;}if(editing===-1){if(clocks.length>=10)return;clocks.push({label,zone,autoDescription,color});}else if(editing!==null)clocks[editing]={label,zone,autoDescription,color};closeEditor();renderList();renderTime();feedback(label+' saved in this preview.');};
+    q('[data-save]').onclick=e=>{e.preventDefault();const zone=q('[data-zone]').value.trim(),description=q('[data-description]').value.trim(),label=description||locationName(zone),autoDescription=descriptionIsAutomatic||!description,color=q('[data-inherit-color]').checked?null:q('[data-clock-color]').value,showAbbr=q('[data-clock-abbr]').checked;if(!zones.includes(zone)){q('[data-error]').textContent='Choose a valid time zone from the list.';return;}if(editing===-1){if(clocks.length>=10)return;clocks.push({label,zone,autoDescription,color,showAbbr});}else if(editing!==null)clocks[editing]={label,zone,autoDescription,color,showAbbr};closeEditor();renderList();renderTime();feedback(label+' saved in this preview.');};
     qa('[data-tab]').forEach(button=>button.onclick=()=>{qa('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));qa('[data-pane]').forEach(p=>p.hidden=p.dataset.pane!==button.dataset.tab);});
     for(const key of ['font','size','opacity','color','format','layout','position','abbr','seconds','day','shadow']){const input=q('[data-'+key+']');input.addEventListener('input',()=>{state[key]=input.type==='checkbox'?input.checked:['size','opacity'].includes(key)?+input.value:input.value;renderStyle();});}
     q('select[data-background]').onchange=()=>{state.background=q('select[data-background]').value;renderStyle();};

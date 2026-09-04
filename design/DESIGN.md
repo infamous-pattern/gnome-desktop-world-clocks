@@ -18,11 +18,13 @@ User-facing name: **Desktop World Clocks**.
 7. Offer five layouts: inline, aligned columns, stacked, two-column grid, and horizontal strip. The grid collapses when space is limited; the strip wraps as needed to keep clocks visible.
 8. Provide transparent, solid-color, or user-selected image backgrounds for the clock group. Transparent is the default. Backgrounds do not change the desktop wallpaper and remain independent of text opacity. Images use centered, cover-style cropping.
 
+9. Give each clock a “Show time zone abbreviation” option, enabled by default. The global “Enable time zone abbreviations” switch is a master control: disabling it hides all abbreviations without discarding individual choices. The local description and actual time-zone conversion remain unchanged.
+
 ## Preview interactions
 
 - Eight starting locations match the supplied reference: Los Angeles, Austin, London, Vienna, Pune, Singapore, Japan, and Melbourne.
 - Time is live device time; displayed abbreviations follow the current date, rather than copying the reference's seasonal abbreviations.
-- Add, rename, change zone, remove, and reorder clocks. Adding is disabled at ten.
+- Add, rename, change zone, remove, and reorder clocks. Show or hide each clock’s time-zone abbreviation independently, subject to the global master switch. Adding is disabled at ten.
 - Searchable installed-font chooser, 14–48 px size, 0–100% clock opacity, global color and per-clock color overrides, 12/24-hour display, optional seconds, optional date difference relative to the device, and text shadow.
 - Inline, aligned-column, stacked, two-column grid, and wrapping horizontal-strip layouts; four desktop corner anchors.
 - Transparent, solid-color, or local-image clock backgrounds. PNG, JPG, and WebP files up to 10 MB are supported in the preview. Files stay in browser memory for the current page session and are not uploaded or committed. Switching modes retains the chosen color/image for this session.
