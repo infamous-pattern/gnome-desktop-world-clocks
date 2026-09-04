@@ -21,11 +21,11 @@ assert "version" not in metadata and "session-modes" not in metadata, "Unnecessa
 schema_id = metadata['settings-schema']
 assert schema_id.startswith('org.gnome.shell.extensions.'), "Invalid schema namespace"
 schema_path = f'schemas/{schema_id}.gschema.xml'
-schema = ET.parse(root / schema_path).getroot().find('schema')
+schema = ET.parse(root / schema_path).getroot().find(f"schema[@id='{schema_id}']")
 assert schema.get('id') == schema_id and schema.get('path').startswith('/org/gnome/shell/extensions/'), "Invalid schema identity"
 names = [
     "metadata.json", "extension.js", "prefs.js", "LICENSE",
-    "shared/model.js", "shell/controller.js", "prefs/window.js", "prefs/zones.js", "prefs/images.js",
+    "shared/model.js", "shared/groups.js", "shell/controller.js", "shell/manager.js", "prefs/window.js", "prefs/zones.js", "prefs/images.js",
     schema_path, "schemas/gschemas.compiled",
 ]
 paths = [root / name for name in names]

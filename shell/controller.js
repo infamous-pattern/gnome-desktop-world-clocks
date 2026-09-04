@@ -10,14 +10,13 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {ngettext} from 'resource:///org/gnome/shell/extensions/extension.js';
-import {boundaryDelay, clockText, cssString, LAYOUTS, managedImagePath, readClocks, validColor} from '../shared/model.js';
+import {clockText, cssString, LAYOUTS, managedImagePath, readClocks, validColor} from '../shared/model.js';
 
 export class ClockController {
-    constructor(settings) {
+    constructor(settings, manager) {
         this._settings = settings;
         this._signals = [];
-        this._timerId = 0;
-        this._sleeping = false;
+        this._manager = manager;
         this._items = [];
         this._actor = null;
     }
@@ -26,37 +25,24 @@ export class ClockController {
         this._actor = new St.Bin({name: 'desktop-world-clocks', reactive: false, can_focus: false});
         // Isolate this private Shell integration point; source-reviewed against the targeted layout.js versions.
         Main.layoutManager._backgroundGroup.add_child(this._actor);
-        this._connect(this._settings, 'changed', () => this._configure());
-        this._connect(Main.layoutManager, 'monitors-changed', () => this._configure());
-        this._connect(global.display, 'workareas-changed', () => this._configure());
-        this._connect(global.display, 'in-fullscreen-changed', () => this._syncVisibility());
-        this._connect(Main.overview, 'showing', () => this._syncVisibility());
-        this._connect(Main.overview, 'hidden', () => this._syncVisibility());
-        this._connect(this._actor, 'notify::mapped', () => this._syncTimer());
-        this._sleepSubscription = Gio.DBus.system.signal_subscribe(
-            'org.freedesktop.login1', 'org.freedesktop.login1.Manager', 'PrepareForSleep',
-            '/org/freedesktop/login1', null, Gio.DBusSignalFlags.NONE,
-            (_bus, _sender, _path, _iface, _signal, parameters) => {
-                [this._sleeping] = parameters.deep_unpack();
-                this._syncVisibility();
-            });
+        this._connect(this._settings, 'changed', (_settings, key) => {
+            if (key !== 'group-count')
+                this._configure();
+        });
+        this._connect(this._actor, 'notify::mapped', () => this._manager._syncTimer());
         this._configure();
     }
 
     destroy() {
-        this._stopTimer();
         for (const [object, id] of this._signals)
             object.disconnect(id);
         this._signals = [];
-        if (this._sleepSubscription) {
-            Gio.DBus.system.signal_unsubscribe(this._sleepSubscription);
-            this._sleepSubscription = 0;
-        }
         this._items = [];
         this._actor.destroy();
         this._actor = null;
         this._content = null;
         this._settings = null;
+        this._manager = null;
     }
 
     _connect(object, signal, callback) {
@@ -64,7 +50,6 @@ export class ClockController {
     }
 
     _configure() {
-        this._stopTimer();
         const requested = this._settings.get_int('monitor');
         this._monitor = Main.layoutManager.monitors[requested] ?? Main.layoutManager.primaryMonitor;
         if (!this._monitor) {
@@ -172,8 +157,8 @@ export class ClockController {
         return base;
     }
 
-    _update() {
-        const now = GLib.DateTime.new_now_local();
+    _update(now = GLib.DateTime.new_now_local()) {
+        this._lastMinute = Math.floor(now.to_unix() / 60);
         for (const item of this._items) {
             const text = clockText(item.record, item.zone, now, this._options);
             this._setText(item.name, this._layout === 'classic' ? `${text.name} – ${text.time}` : text.name);
@@ -206,34 +191,9 @@ export class ClockController {
     }
 
     _syncVisibility() {
-        this._actor.visible = Boolean(this._monitor && this._items.length && !this._sleeping &&
+        this._actor.visible = Boolean(this._monitor && this._items.length && !this._manager._sleeping &&
             !Main.overview.visible && !global.display.get_monitor_in_fullscreen(this._monitor.index));
-        this._syncTimer();
+        this._manager._syncTimer();
     }
 
-    _syncTimer() {
-        this._stopTimer();
-        if (!this._actor.mapped || !this._actor.visible || this._sleeping || !this._items.length)
-            return;
-        this._update();
-        this._schedule();
-    }
-
-    _schedule() {
-        this._stopTimer();
-        const delay = boundaryDelay(GLib.get_real_time() / 1000, this._options.seconds);
-        this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
-            this._timerId = 0;
-            this._update();
-            this._schedule();
-            return GLib.SOURCE_REMOVE;
-        });
-    }
-
-    _stopTimer() {
-        if (this._timerId) {
-            GLib.Source.remove(this._timerId);
-            this._timerId = 0;
-        }
-    }
 }

@@ -1,7 +1,7 @@
 {
   "uuid": "desktop-world-clocks@infamous-pattern.github.io",
   "name": "Desktop World Clocks",
-  "description": "Up to ten lightweight desktop world clocks, with custom descriptions, fonts, colors, opacity, layouts, and backgrounds. Uses the operating system clock and its existing time synchronization service.",
+  "description": "Up to four independent desktop clock groups, with ten world clocks per group. Customize each group’s corner, monitor, fonts, colors, opacity, layout, and background. Uses the system clock and its existing time synchronization service.",
   "shell-version": [
     "49",
     "50",

@@ -1,26 +1,29 @@
 {
   "date": "2026-09-04",
-  "archive_sha256": "fc124d367771a7f18e6c43e3e91403920e4998865bb3c2ff88f17e80c12813e8",
+  "archive_sha256": "91f9b07acd2faa9329102f3a7d3fc1499e2fafd0431f02c5cede845c03fc3eee",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
-    "extension.js": "5364c4bde4d85cb8036de602d340db85cf1e39e15d7bfbd4dd82da2ec98a9d64",
-    "metadata.json": "ca715cc021a43a22e98a36cb799a071517f9904dccb5840bf0abfa370ce047a4",
+    "extension.js": "1269acd041c0539a29b8abcfda51d5cc4ad92804459dcea595ffcb7ff0a196cd",
+    "metadata.json": "598b4e9e0a9119733e184c634607f3c76d7c65cd2dc9ada8fb48089f6d0fc218",
     "prefs/images.js": "bf78c1fa082a3bb5e3af17e3919a5d9705fe988f2f5ebe695f8e99c674b5137b",
-    "prefs/window.js": "2eebfe3992b7668f41b26bba3c0a654171d3a2290ea9a09de13e615abceba9be",
+    "prefs/window.js": "b632489cce8d1c68f3acfd4b8e6d0b30ea78e827f6d1438c8b5eef4cc18490fa",
     "prefs/zones.js": "06e38733a232b68be734a4df7c340e3e98671ad9d6b9d3eb31bbdfccfb29a22a",
     "prefs.js": "f3cdf49fffaee907cb6638b7eac1efda818c8c998aea2f1acb16c4123813d9c4",
-    "schemas/gschemas.compiled": "b0d2d87e8e5b823b5cffe74c929186d56c6c83139c91f097f63b155b06210ea7",
-    "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f3e62fe0b05fbdb7acc5c2c9af1568fb702dee01234339581b998e09624188c3",
+    "schemas/gschemas.compiled": "9291ef12c611946852ed73484212ff53bce15660d99d2d804596366cdb9388b3",
+    "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f2e4ae3562992146e88e661e0952687e71f890d88849b51cca8ef1715097710c",
+    "shared/groups.js": "498175d4bfa2ecabc6327abb1e3a377bcb33af0c5a9b20dff0bb527aaded5afe",
     "shared/model.js": "2cb8981854fc7ee8d5918fdca3c4d0c4de5ed26d1c4377e6c0ff2284ca975a25",
-    "shell/controller.js": "5bfe297f3557f7ce4b1969b6bf9199e2e544ba7ac5444276c238122d1414ee14"
+    "shell/controller.js": "1feb24f2f788285dc1a963277d95b5a6b7500091b5c6af180112da512130571a",
+    "shell/manager.js": "2d7b0e2ebe4b62da9ec90e26b6d32575f4b99a664b1379b0d376a31bad384974"
   },
   "validation": {
     "model_checks": 25,
-    "adversarial_checks": 27,
+    "adversarial_checks": 33,
     "image_rejection_and_cancellation_checks": 7,
     "npm_known_vulnerabilities": 0,
     "working_tree_secret_findings": 0,
-    "aligned_text_right_edge_check": "pass on GNOME 50.4; unequal time widths and day labels"
+    "aligned_text_right_edge_check": "pass on GNOME 50.4; unequal time widths and day labels",
+    "four_group_checks": "pass: 40 clocks, bounded groups, independent settings, shared scheduling, hiding/restoring, preferences, and cleanup"
   },
   "gnome_runtime": [
     {
@@ -28,20 +31,21 @@
       "environment": "Fedora 43 rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Prior core result before the right-alignment fix; this change has not been rerun on this version."
+      "scope_note": "Four-group build tested; image tests included only in the full 50.4 run."
     },
     {
       "version": "50.4",
       "environment": "Fedora 44 isolated Wayland session",
       "mode": "full automated suite",
-      "result": "pass"
+      "result": "pass",
+      "scope_note": "Four-group build tested; image tests included only in the full 50.4 run."
     },
     {
       "version": "51.beta",
       "environment": "Fedora development rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Prior core result before the right-alignment fix; this change has not been rerun on this version."
+      "scope_note": "Four-group build tested; image tests included only in the full 50.4 run."
     }
   ],
   "remaining": [
@@ -51,5 +55,5 @@
     "Physical-session checks",
     "Final GNOME 51 release validation"
   ],
-  "follow_up": "2026-09-04: right-align aligned-layout time/day labels; full GNOME 50.4 suite, lint, 25 model checks, and 27 adversarial checks pass."
+  "follow_up": "2026-09-04: four independent groups, full GNOME 50.4 suite and 49.9/51.beta core suites pass; lint, 25 model checks, 33 adversarial checks, npm audit and directory secret scan pass."
 }

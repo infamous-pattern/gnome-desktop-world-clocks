@@ -1,6 +1,6 @@
 # Desktop World Clocks
 
-Up to ten customizable world clocks directly on the GNOME desktop, above the wallpaper and below application windows.
+Up to four independent groups of world clocks directly on the GNOME desktop, above the wallpaper and below application windows. Each group supports up to ten clocks (40 total).
 
 **Development build. Targets GNOME Shell 49, 50, and 51.** Version declarations are in `metadata.json`; runtime testing is recorded separately:
 
@@ -18,15 +18,25 @@ Native desktop detail, shown with text shadow disabled for clarity. [View the fu
 
 ## Features
 
+- Show one to four independent clock groups, each with its own clocks, corner, monitor, fonts, colors, opacity, layout, background, and time format.
+
 - Choose from the installed IANA time-zone database, including aliases and UTC. Duplicate zones with different labels are supported.
-- Add, remove, and reorder up to ten clocks. A blank description uses the selected location name, such as `America/New_York` → `New York`.
+- Add, remove, and reorder up to ten clocks per group. A blank description uses the selected location name, such as `America/New_York` → `New York`.
 - Pick any font family available to GNOME using its native font chooser. Set font size, text opacity, global color, and individual clock color overrides.
 - Hide the time-zone abbreviation per clock, or hide all abbreviations with the global switch. Abbreviations follow daylight-saving rules; numeric zone names display as UTC offsets.
 - Five layouts: inline, aligned time column, large time with label above, two-column grid, and a wrapping horizontal strip.
 - Four corner positions, monitor selection, edge margin, 12/24-hour time, optional seconds, optional date difference, and text shadow.
 - Transparent, solid-color, or local-image backgrounds for the clock group. Text opacity is independent of the background. Images use centered cover cropping.
 
-The clock group shrinks to fit when the selected font, labels, and clock count exceed the available desktop space. Grid and strip layouts adapt to monitor width. Monitor `−1` follows the primary monitor; nonnegative values select a monitor by its current index. A disconnected selection falls back to the primary monitor.
+Each clock group shrinks to fit when the selected font, labels, and clock count exceed the available desktop space. Grid and strip layouts adapt to monitor width. Monitor `−1` follows the primary monitor; nonnegative values select a monitor by its current index. A disconnected selection falls back to the primary monitor.
+
+## Clocks in every corner
+
+Open **Groups**, set **Number of groups** to 4, and use **Group to edit** to choose which group the **Clocks** and **Appearance** pages configure. Group 1 preserves your existing clocks and settings. New groups start with one UTC clock in the top-right, bottom-left, and bottom-right corners; customize their clocks as needed. Each group’s corner and monitor can be changed in Appearance.
+
+Reducing the count hides the higher-numbered groups and retains their settings. Increasing it restores them. Large groups can overlap on small screens; reduce font size or clock count, or choose another layout or monitor.
+
+![Four independent clock groups on a native GNOME desktop](docs/desktop-four-groups.png)
 
 ## Time synchronization and resource use
 
@@ -34,9 +44,9 @@ All clocks read the same **existing system clock**. The operating system's time 
 
 Preferences show the system-reported synchronization status, with a manual refresh and an **Open Date & Time** button. Status can be unavailable on systems without the standard time-status service; clocks continue displaying system time. No server, offset, accuracy, or last-sync measurements are invented.
 
-The desktop component has one shared timer, aligned to minute boundaries by default. Enabling seconds uses one update per second. It caches up to ten zone objects, reuses clock widgets, and changes text only when needed. It pauses updates in Overview, during suspend, and when the selected monitor has a full-screen application. Disabling the extension removes its timer, signals, D-Bus subscription, and actors. The desktop component starts no web view, network polling, telemetry, helper process, or Node.js runtime. Native preferences may use the operating system’s own image-decoder and portal services.
+The desktop component has one shared timer, aligned to minute boundaries by default. The same timer serves all four groups. If any visible group shows seconds, it wakes once per second, while minute-only groups skip formatting until the minute changes. It caches up to ten zone objects per group (40 total), reuses clock widgets, and changes text only when needed. It pauses updates in Overview and during suspend. Groups on a monitor with a full-screen application pause independently. Empty or hidden groups consume no clock timer; hidden groups release their desktop actors. Disabling the extension removes its timer, signals, D-Bus subscription, and actors. The desktop component starts no web view, network polling, telemetry, helper process, or Node.js runtime. Native preferences may use the operating system’s own image-decoder and portal services.
 
-The native preferences process loads fonts and the time-zone list only when needed. Selected PNG/JPG/WebP images must be local regular files and at most 10 MB; bounded reads and raster-signature checks enforce that limit before decoding; preferences prepare a copy no larger than 2048 × 2048 pixels in `$XDG_DATA_HOME/desktop-world-clocks` (normally `~/.local/share/desktop-world-clocks`). Replacing an image removes the previous managed copy. The original stays untouched. Missing images render without an image and can be replaced in preferences.
+The native preferences process loads fonts and the time-zone list only when needed. Selected PNG/JPG/WebP images must be local regular files and at most 10 MB; bounded reads and raster-signature checks enforce that limit before decoding; preferences prepare a copy no larger than 2048 × 2048 pixels in `$XDG_DATA_HOME/desktop-world-clocks` (normally `~/.local/share/desktop-world-clocks`). Replacing a group’s image removes its previous managed copy if no other group references it. The original stays untouched. Missing images render without an image and can be replaced in preferences.
 
 These are implemented resource controls, not measured CPU or memory guarantees. Leave seconds off and use a transparent background for the lowest update and image-memory cost.
 

@@ -129,6 +129,54 @@ app.connect('activate', () => {
             GLib.mkdir_with_parents(resultDir, 0o700);
             texture.save_to_png(`${resultDir}/preferences.png`);
         }
+        const original = settings.get_string('clocks');
+        const originalSize = settings.get_int('font-size');
+        preferences._groupCountRow.value = 4;
+        await pause(100);
+        assert(settings.get_int('group-count') === 4, 'Group count control enables four groups');
+        preferences._groupSelector.selected = 3;
+        await pause(150);
+        const fourth = preferences._settings;
+        assert(fourth.get_string('position') === 'bottom-right', 'Fourth group starts in bottom-right corner');
+        assert(preferences._clockRows.length === 1, 'New groups start with a single UTC clock');
+        const sizeControl = descendants(window).find(widget => widget instanceof Adw.SpinRow && widget.title === 'Font size');
+        sizeControl.value = 37;
+        assert(fourth.get_int('font-size') === 37 && settings.get_int('font-size') === originalSize, 'Appearance edits affect selected group only');
+        preferences._edit(0);
+        await pause(100);
+        const fourthEditor = descendants(preferences._dialog);
+        fourthEditor.find(widget => widget instanceof Gtk.Entry).text = 'Fourth corner';
+        fourthEditor.find(widget => widget instanceof Gtk.Button && widget.label === 'Save clock').emit('clicked');
+        assert(JSON.parse(fourth.get_string('clocks'))[0].label === 'Fourth corner', 'Clock editor saves to selected group');
+        assert(settings.get_string('clocks') === original, 'Group 1 clocks preserved');
+        const pendingImage = !coreOnly ? preferences._prepareImage(Gio.File.new_for_path(`${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/test-results/desktop.png`)) : null;
+        preferences._groupCountRow.value = 1;
+        await pause(150);
+        if (pendingImage)
+            await pendingImage;
+        assert(preferences._groupIndex === 0 && preferences._settings === settings, 'Hiding the edited group selects Group 1');
+        assert(fourth.get_string('background-image') === '', 'Switching groups cancels an in-flight image import');
+        sizeControl.value = 22;
+        assert(fourth.get_int('font-size') === 37 && settings.get_int('font-size') === originalSize, 'Old settings bindings released');
+        preferences._groupCountRow.value = 4;
+        await pause(100);
+        preferences._groupSelector.selected = 3;
+        await pause(150);
+        assert(preferences._settings.get_int('font-size') === 37, 'Hidden group appearance retained');
+        assert(preferences._clockRows[0].title === 'Fourth corner', 'Hidden group clocks retained');
+        if (!coreOnly) {
+            const pixbuf = GdkPixbuf.Pixbuf.new_from_file(settings.get_string('background-image'));
+            const originalImage = settings.get_string('background-image');
+            preferences._saveImage(pixbuf);
+            await pause(100);
+            assert(fourth.get_string('background-image') !== originalImage, 'Groups have independent managed image copies');
+            assert(GLib.file_test(originalImage, GLib.FileTest.IS_REGULAR), 'Replacing another group image preserves Group 1 image');
+        }
+        for (const key of ['font-size', 'clocks', 'background-image'])
+            fourth.reset(key);
+        preferences._groupCountRow.value = 1;
+        print(coreOnly ? 'PASS: group selector, independent clock/appearance edits, and preserved hidden settings'
+            : 'PASS: group selector, independent clock/appearance/image edits, cancellation, and preserved hidden settings');
         preferences.close();
         window.close();
         print(coreOnly ? 'PASS: native preferences and zone/font controls (partial: images/screenshots excluded)'

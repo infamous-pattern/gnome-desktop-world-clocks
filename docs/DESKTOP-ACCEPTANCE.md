@@ -17,6 +17,10 @@ Aligned Time Column now right-aligns each time and its optional day label inside
 
 The updated installed JavaScript requires a fresh GNOME session before the owner can confirm this fix on the physical desktop.
 
+## Four-group feature awaiting desktop retest
+
+The extension now supports four independent groups with up to ten clocks each. The Groups page selects the count and the group edited by Clocks/Appearance. Group 1 uses the existing settings path; hidden groups retain their configuration. The automated suite covers 40 clocks, shared scheduling, independent settings, group removal/restoration, and preferences image cancellation. A physical login and four-corner check are still required.
+
 ## Still pending
 
 - Clock add/remove/reorder, description fallback, per-clock color and abbreviation controls.

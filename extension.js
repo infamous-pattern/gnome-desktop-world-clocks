@@ -4,16 +4,16 @@
 // and can maintain this code.
 
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-import {ClockController} from './shell/controller.js';
+import {ClockManager} from './shell/manager.js';
 
 export default class DesktopWorldClocks extends Extension {
     enable() {
-        this._controller = new ClockController(this.getSettings());
-        this._controller.start();
+        this._manager = new ClockManager(this.getSettings());
+        this._manager.start();
     }
 
     disable() {
-        this._controller.destroy();
-        this._controller = null;
+        this._manager.destroy();
+        this._manager = null;
     }
 }

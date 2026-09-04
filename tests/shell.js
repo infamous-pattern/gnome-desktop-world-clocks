@@ -4,6 +4,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {testGroups} from './groups.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 
 const coreOnly = GLib.getenv('WORLD_CLOCK_CORE_ONLY') === '1';
@@ -19,19 +20,19 @@ export async function run() {
     Main.overview.hide();
     await Scripting.sleep(1000);
     // Extension loading can finish after the compositor's startup notification.
-    for (let attempt = 0; attempt < 50 && !Main.extensionManager.lookup(UUID)?.stateObj?._controller; attempt++)
+    for (let attempt = 0; attempt < 50 && !Main.extensionManager.lookup(UUID)?.stateObj?._manager?._groups[0]; attempt++)
         await Scripting.sleep(100);
     const extension = Main.extensionManager.lookup(UUID);
     assert(extension, 'Extension discovered');
     assert(!extension.error, `Extension startup: ${extension.error}`);
     const instance = extension.stateObj;
-    assert(instance?._controller, 'Extension enabled');
-    let controller = instance._controller;
+    assert(instance?._manager?._groups[0], 'Extension enabled');
+    let controller = instance._manager._groups[0];
     const settings = controller._settings;
     assert(controller._items.length === 8, 'Eight default clocks');
     assert(controller._actor.mapped, 'Clock surface is on the desktop');
-    assert(controller._timerId > 0, 'One active clock timer');
-    assert(GLib.MainContext.default().find_source_by_id(controller._timerId), 'Timer source exists');
+    assert(instance._manager._timerId > 0, 'One active clock timer');
+    assert(GLib.MainContext.default().find_source_by_id(instance._manager._timerId), 'Timer source exists');
 
     for (const layout of ['classic', 'aligned', 'stacked', 'grid', 'strip']) {
         settings.set_string('layout', layout);
@@ -58,7 +59,7 @@ export async function run() {
     assert(controller._items[0].cell.get_style().includes('#00ff00'), 'Per-clock color');
 
     // Unequal time widths must end at the same column edge, including day labels.
-    controller._stopTimer();
+    instance._manager._stopTimer();
     for (const [index, item] of controller._items.entries()) {
         item.time.set_text(index % 2 ? '11:11' : '8:58 PM');
         item.day.set_text(index % 2 ? '+1 day' : '');
@@ -79,26 +80,26 @@ export async function run() {
     }
     print('PASS: aligned times and day labels share a right edge');
     controller._update();
-    controller._syncTimer();
+    instance._manager._syncTimer();
 
     Main.overview.show();
     await Scripting.sleep(500);
-    assert(controller._timerId === 0, 'No clock wakeups in Overview');
+    assert(instance._manager._timerId === 0, 'No clock wakeups in Overview');
     Main.overview.hide();
     await Scripting.sleep(500);
-    assert(controller._timerId > 0, 'Timer resumes after Overview');
+    assert(instance._manager._timerId > 0, 'Timer resumes after Overview');
     settings.set_boolean('show-seconds', true);
     await Scripting.sleep(1200);
     assert(/\d\d:\d\d:\d\d/.test(controller._items[0].time.text), 'Seconds refresh');
 
     for (let iteration = 0; iteration < 5; iteration++) {
-        const source = controller._timerId;
+        const source = instance._manager._timerId;
         instance.disable();
         assert(!GLib.MainContext.default().find_source_by_id(source), 'No source remains after disable');
         assert(controller._signals.length === 0 && controller._items.length === 0, 'Signals and clock resources cleared');
         assert(controller._actor === null && controller._settings === null, 'Actors and settings released');
         instance.enable();
-        controller = instance._controller;
+        controller = instance._manager._groups[0];
         await Scripting.sleep(100);
         const surfaces = Main.layoutManager._backgroundGroup.get_children().filter(actor => actor.name === 'desktop-world-clocks');
         assert(surfaces.length === 1, 'Only one surface after repeated enable/disable');
@@ -126,12 +127,13 @@ export async function run() {
     assert(fullHeight * controller._actor.scale_y <= controller._area.height - 2 * controller._margin + 1, 'Large clocks fit available height');
     settings.set_string('clocks', '[]');
     await Scripting.sleep(100);
-    assert(!controller._actor.visible && controller._timerId === 0, 'Empty list consumes no clock timer');
+    assert(!controller._actor.visible && instance._manager._timerId === 0, 'Empty list consumes no clock timer');
     settings.reset('clocks');
     settings.reset('font-size');
     settings.reset('position');
     settings.reset('background-mode');
     await Scripting.sleep(200);
+    await testGroups(instance);
     if (!coreOnly) {
         const desktopBackground = new Gio.Settings({schema_id: 'org.gnome.desktop.background'});
         desktopBackground.set_string('picture-uri', '');
@@ -163,6 +165,26 @@ export async function run() {
         settings.reset('layout');
         settings.reset('use-12-hour');
         settings.reset('text-shadow');
+        settings.set_int('group-count', 4);
+        await Scripting.sleep(150);
+        const sample = JSON.parse(settings.get_string('clocks'));
+        for (const [index, group] of instance._manager._groups.entries()) {
+            group._settings.set_string('clocks', JSON.stringify(sample.slice(index * 2, index * 2 + 2)));
+            group._settings.set_int('font-size', 30);
+            group._settings.set_boolean('text-shadow', false);
+            group._settings.set_string('font-color', ['#ffffff', '#a5e9df', '#ffe0b5', '#d7c7ff'][index]);
+        }
+        await Scripting.sleep(250);
+        const groupsStream = Gio.File.new_for_path(`${resultDir}/desktop-four-groups.png`).replace(null, false, Gio.FileCreateFlags.NONE, null);
+        const [groupsCaptured] = await new Shell.Screenshot().screenshot(false, groupsStream);
+        assert(groupsCaptured, 'Four desktop groups screenshot captured successfully');
+        groupsStream.close(null);
+        for (const group of instance._manager._groups) {
+            for (const key of ['clocks', 'font-size', 'font-color', 'text-shadow'])
+                group._settings.reset(key);
+        }
+        settings.reset('group-count');
+
     }
     const process = Gio.Subprocess.new(['gjs', '-m', `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/tests/prefs.js`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
     const [, output, errors] = await new Promise((resolve, reject) => {

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import {cssString, managedImagePath, MAX_SETTINGS_LENGTH, readClocks, validColor} from '../shared/model.js';
+import {groupSettings} from '../shared/groups.js';
 import GLib from 'gi://GLib';
 let checks = 0;
 function check(condition, name) {
@@ -28,4 +29,13 @@ for (const path of ['/etc/passwd', '/tmp/image.png', 'https://example.invalid/im
     check(!managedImagePath(path), 'Unmanaged image path rejected');
 const managed = GLib.build_filenamev([GLib.get_user_data_dir(), 'desktop-world-clocks', 'background-12345678-1234-1234-1234-123456789abc.png']);
 check(managedImagePath(managed), 'Managed image accepted');
+for (const index of [-1, 4, 99, 1.5, '1', NaN]) {
+    let rejected = false;
+    try {
+        groupSettings(null, index);
+    } catch (error) {
+        rejected = error instanceof RangeError;
+    }
+    check(rejected, 'Group index is bounded before settings access');
+}
 print(`PASS: ${checks} adversarial input checks`);

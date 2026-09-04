@@ -11,6 +11,7 @@ import Pango from 'gi://Pango';
 
 import {gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 import {BACKGROUNDS, LAYOUTS, locationName, managedImagePath, MAX_CLOCKS, POSITIONS, readClocks, validColor, writeClocks} from '../shared/model.js';
+import {groupSettings, MAX_GROUPS} from '../shared/groups.js';
 import {loadZones} from './zones.js';
 import {loadImage} from './images.js';
 
@@ -45,7 +46,12 @@ function button(icon, description, callback) {
 export class Preferences {
     constructor(window, settings) {
         this._window = window;
+        this._rootSettings = settings;
+        this._allSettings = Array.from({length: MAX_GROUPS}, (_, index) => groupSettings(settings, index));
         this._settings = settings;
+        this._groupIndex = -1;
+        this._bindings = [];
+        this._groupCancellable = new Gio.Cancellable();
         this._cancellable = new Gio.Cancellable();
         this._imageCancellable = null;
         this._zones = [];
@@ -54,16 +60,15 @@ export class Preferences {
     }
 
     build() {
-        this._clocksPage();
-        this._appearancePage();
+        this._groupsPage();
+        this._selectGroup(0);
         this._timePage();
-        this._changedId = this._settings.connect('changed::clocks', () => this._refreshClocks());
-        this._refreshClocks();
+        this._groupCountId = this._rootSettings.connect('changed::group-count', () => this._refreshGroupSelector());
         loadZones(this._cancellable).then(zones => {
             if (this._cancellable.is_cancelled())
                 return;
             this._zones = zones;
-            this._clockGroup.description = _('Choose any system time zone or alias. Up to ten clocks.');
+            this._clockGroup.description = _('Choose any system time zone or alias. Up to ten clocks per group.');
             this._refreshClocks();
         }).catch(error => {
             if (this._cancellable.is_cancelled())
@@ -76,6 +81,13 @@ export class Preferences {
     close() {
         this._cancellable.cancel();
         this._imageCancellable?.cancel();
+        this._groupCancellable.cancel();
+        this._unbindGroup();
+        if (this._groupCountId) {
+            this._rootSettings.disconnect(this._groupCountId);
+            this._groupCountId = 0;
+        }
+        Gio.Settings.unbind(this._groupCountRow, 'value');
         if (this._changedId) {
             this._settings.disconnect(this._changedId);
             this._changedId = 0;
@@ -88,6 +100,80 @@ export class Preferences {
         this._zones = [];
         this._window = null;
         this._settings = null;
+        this._allSettings = [];
+        this._rootSettings = null;
+    }
+
+    _groupsPage() {
+        const page = this._page(_('Groups'), 'view-grid-symbolic');
+        const group = new Adw.PreferencesGroup({title: _('Desktop clock groups'),
+            description: _('Show up to four groups, each with its own clocks and appearance. Hidden groups keep their settings.')});
+        page.add(group);
+        this._groupCountRow = new Adw.SpinRow({title: _('Number of groups'),
+            adjustment: new Gtk.Adjustment({lower: 1, upper: MAX_GROUPS, step_increment: 1, page_increment: 1})});
+        this._rootSettings.bind('group-count', this._groupCountRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        group.add(this._groupCountRow);
+        this._groupSelector = new Adw.ComboRow({title: _('Group to edit'),
+            subtitle: _('The Clocks and Appearance pages apply to this group.')});
+        group.add(this._groupSelector);
+        this._refreshGroupSelector();
+        this._groupSelector.connect('notify::selected', () => {
+            if (!this._updatingSelector)
+                this._selectGroup(this._groupSelector.selected);
+        });
+    }
+
+    _refreshGroupSelector() {
+        const count = this._rootSettings.get_int('group-count');
+        const index = Math.min(Math.max(0, this._groupIndex), count - 1);
+        this._updatingSelector = true;
+        this._groupSelector.model = Gtk.StringList.new(Array.from({length: count}, (_value, i) => _('Group %s').replace('%s', `${i + 1}`)));
+        this._groupSelector.selected = index;
+        this._groupSelector.sensitive = count > 1;
+        this._updatingSelector = false;
+        if (this._groupIndex >= count)
+            this._selectGroup(index);
+    }
+
+    _unbindGroup() {
+        for (const [widget, property] of this._bindings)
+            Gio.Settings.unbind(widget, property);
+        this._bindings = [];
+    }
+
+    _selectGroup(index) {
+        if (!Number.isInteger(index) || index < 0 || index >= this._rootSettings.get_int('group-count') || index === this._groupIndex)
+            return;
+        const visible = this._window.visible_page;
+        const wasAppearance = visible && visible === this._appearance;
+        const wasClocks = visible && visible === this._clockPage;
+        this._groupCancellable.cancel();
+        this._groupCancellable = new Gio.Cancellable();
+        this._imageCancellable?.cancel();
+        if (this._dialog) {
+            this._dialog.destroy();
+            this._dialog = null;
+        }
+        if (this._changedId)
+            this._settings.disconnect(this._changedId);
+        this._unbindGroup();
+        for (const page of [this._clockPage, this._appearance, this._time]) {
+            if (page)
+                this._window.remove(page);
+        }
+        this._clockRows = [];
+        this._settings = this._allSettings[index];
+        this._groupIndex = index;
+        this._clocksPage();
+        this._appearancePage();
+        if (this._time)
+            this._window.add(this._time);
+        this._changedId = this._settings.connect('changed::clocks', () => this._refreshClocks());
+        this._refreshClocks();
+        if (wasAppearance)
+            this._window.visible_page = this._appearance;
+        else if (wasClocks)
+            this._window.visible_page = this._clockPage;
     }
 
     _toast(message) {
@@ -102,7 +188,9 @@ export class Preferences {
 
     _clocksPage() {
         const page = this._page(_('Clocks'), 'preferences-system-time-symbolic');
-        this._clockGroup = new Adw.PreferencesGroup({title: _('Your clocks'), description: _('Loading system time zones…')});
+        this._clockPage = page;
+        this._clockGroup = new Adw.PreferencesGroup({title: _('Clocks · Group %s').replace('%s', `${this._groupIndex + 1}`),
+            description: this._zones.length ? _('Choose any system time zone or alias. Up to ten clocks per group.') : _('Loading system time zones…')});
         this._add = button('list-add-symbolic', _('Add clock'), () => this._edit(-1));
         this._clockGroup.header_suffix = this._add;
         page.add(this._clockGroup);
@@ -207,6 +295,7 @@ export class Preferences {
     _switch(group, key, title, subtitle = '') {
         const row = new Adw.SwitchRow({title, subtitle});
         this._settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+        this._bindings.push([row, 'active']);
         group.add(row);
         return row;
     }
@@ -214,20 +303,23 @@ export class Preferences {
     _number(group, key, title, lower, upper, subtitle = '') {
         const row = new Adw.SpinRow({title, subtitle, adjustment: new Gtk.Adjustment({lower, upper, step_increment: 1, page_increment: 5})});
         this._settings.bind(key, row, 'value', Gio.SettingsBindFlags.DEFAULT);
+        this._bindings.push([row, 'value']);
         group.add(row);
         return row;
     }
 
     _combo(group, key, title, values, labels) {
+        const settings = this._settings;
         const row = new Adw.ComboRow({title, model: Gtk.StringList.new(labels), selected: Math.max(0, values.indexOf(this._settings.get_string(key)))});
-        row.connect('notify::selected', () => this._settings.set_string(key, values[row.selected]));
+        row.connect('notify::selected', () => settings.set_string(key, values[row.selected]));
         group.add(row);
         return row;
     }
 
     _color(group, key, title) {
+        const settings = this._settings;
         const chooser = colorButton(this._settings.get_string(key));
-        chooser.connect('notify::rgba', () => this._settings.set_string(key, hex(chooser.rgba)));
+        chooser.connect('notify::rgba', () => settings.set_string(key, hex(chooser.rgba)));
         const row = action(title, chooser);
         group.add(row);
         return row;
@@ -235,10 +327,13 @@ export class Preferences {
 
     _appearancePage() {
         const page = this._page(_('Appearance'), 'preferences-desktop-appearance-symbolic');
-        const text = new Adw.PreferencesGroup({title: _('Text'), description: _('Settings apply immediately. Individual clock colors override the global color.')});
+        this._appearance = page;
+        const text = new Adw.PreferencesGroup({title: _('Text · Group %s').replace('%s', `${this._groupIndex + 1}`),
+            description: _('Settings apply immediately. Individual clock colors override the global color.')});
         page.add(text);
         const font = new Gtk.FontDialogButton({dialog: new Gtk.FontDialog(), level: Gtk.FontLevel.FAMILY, font_desc: Pango.FontDescription.from_string(this._settings.get_string('font-family'))});
-        font.connect('notify::font-desc', () => this._settings.set_string('font-family', font.font_desc.get_family()));
+        const settings = this._settings;
+        font.connect('notify::font-desc', () => settings.set_string('font-family', font.font_desc.get_family()));
         text.add(action(_('Installed font'), font, _('Choose from all fonts available to GNOME.')));
         this._number(text, 'font-size', _('Font size'), 14, 48, _('Logical pixels'));
         this._number(text, 'text-opacity', _('Text opacity'), 0, 100, _('Percent; does not fade the background'));
@@ -289,9 +384,12 @@ export class Preferences {
         const filters = new Gio.ListStore({item_type: Gtk.FileFilter});
         filters.append(filter);
         const dialog = new Gtk.FileDialog({title: _('Choose a clock background'), filters});
-        dialog.open(this._window, this._cancellable, (source, result) => {
+        const cancellable = this._groupCancellable;
+        dialog.open(this._window, cancellable, (source, result) => {
             try {
                 const file = source.open_finish(result);
+                if (cancellable.is_cancelled())
+                    return;
                 const path = file.get_path();
                 if (!path) {
                     this._toast(_('Choose an image stored on this computer.'));
@@ -299,7 +397,7 @@ export class Preferences {
                 }
                 this._prepareImage(file);
             } catch (error) {
-                if (!this._cancellable.is_cancelled() && !error.matches(Gtk.DialogError, Gtk.DialogError.DISMISSED))
+                if (!cancellable.is_cancelled() && !error.matches(Gtk.DialogError, Gtk.DialogError.DISMISSED))
                     this._toast(error.message);
             }
         });
@@ -329,7 +427,7 @@ export class Preferences {
             pixbuf.savev(path, 'png', [], []);
             this._settings.set_string('background-image', path);
             this._imageRow.subtitle = basename;
-            if (managedImagePath(previous)) {
+            if (managedImagePath(previous) && !this._allSettings.some(settings => settings.get_string('background-image') === previous)) {
                 Gio.File.new_for_path(previous).delete_async(GLib.PRIORITY_DEFAULT, null, (file, result) => {
                     try {
                         file.delete_finish(result);
@@ -346,6 +444,7 @@ export class Preferences {
 
     _timePage() {
         const page = this._page(_('Time sync'), 'network-server-symbolic');
+        this._time = page;
         const group = new Adw.PreferencesGroup({title: _('System time service'), description: _('All clocks use the computer’s time. The extension does not run an NTP client or background helper.')});
         page.add(group);
         this._syncRow = new Adw.ActionRow({title: _('Synchronization status'), subtitle: _('Not checked'), use_markup: false});

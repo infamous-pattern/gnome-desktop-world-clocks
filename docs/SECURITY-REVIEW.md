@@ -56,3 +56,13 @@ Validation: 27 adversarial input checks, seven native image rejection/cancellati
 Cross-version follow-up: model/security checks and the core Shell/preferences suite also passed on GNOME 49.9 and 51.beta in isolated containers. Image tests were explicitly excluded there because of nested image-sandbox restrictions; see [development notes](DEVELOPMENT.md).
 
 Submission-preparation scans were rerun: npm reported zero known vulnerabilities and Gitleaks found no secrets in the revised working tree. Their JSON output is in `docs/security/2026-09-04/submission-preparation-*.json`; the new ZIP/source checksums and test scope are recorded in [submission-validation.json](submission-validation.json).
+
+## Four-group follow-up (2026-09-04)
+
+Group count is schema-restricted to 1–4 and clamped by the Shell manager. The group-settings helper rejects invalid indices before settings access. The existing ten-clock cap applies independently, bounding total clock records at 40. Child settings use fixed child names under the existing namespace; user input cannot select arbitrary settings paths. Group 1 keeps its original keys/path.
+
+Preferences cancel group-specific file/image operations when switching groups, release old settings bindings, and save each group's image to its own generated managed file. Replacing an image preserves a managed file referenced by another saved group, including hidden groups. Native tests cover independent image copies, cancelled imports, and preservation of Group 1's image.
+
+The manager owns one timer and one sleep subscription and destroys all group actors and signals on disable. Forty-clock lifecycle and mixed-refresh tests pass on GNOME 50.4 and in the 49.9/51.beta core environments. There are no new network, subprocess, or privileged operations.
+
+Checks on this build: 33 adversarial input checks, zero known npm dependency vulnerabilities, and zero Gitleaks directory findings. These are targeted checks, not an independent security audit. Container image tests and physical desktop/resource measurements remain pending.

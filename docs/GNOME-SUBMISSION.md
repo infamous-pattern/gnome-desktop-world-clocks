@@ -18,9 +18,9 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 
 | Area | Result | Evidence |
 | --- | --- | --- |
-| Initialization | PASS | `extension.js` has no constructor or module-scope GObjects; controller creation starts in `enable()`. |
+| Initialization | PASS | `extension.js` has no constructor or module-scope GObjects; manager and controller creation starts in `enable()`. |
 | Object lifetime | PASS | Controller destroys its actor tree and releases clock/settings references. Five disable/enable cycles pass. |
-| Signals | PASS | Controller disconnects tracked signals and its login1 subscription on disable. |
+| Signals | PASS | Controllers disconnect group signals; the manager disconnects shared signals and its single login1 subscription on disable. |
 | Main-loop sources | PASS | One owned timer; removed synchronously before replacement and on disable. |
 | Deprecated modules | PASS | No ByteArray, Lang, or Mainloop imports. |
 | Shell/GTK separation | PASS | Shell imports remain in `shell/`; GTK/image preferences imports remain in `prefs/`; shared code imports GLib only. |
@@ -41,18 +41,22 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | Conduct/political content | PASS | Inspected runtime names, descriptions, labels, and generated review screenshot; no political messaging or abusive content. |
 | License/attribution | PASS | GPL-2.0-or-later source headers and license text included. No code copied from another extension was identified. |
 | Artwork | PASS for ZIP | No bundled logos, wallpapers, fonts, or images. New review screenshot uses a plain-color desktop; historic prototype/screenshots must not be mistaken for licensed bundled assets. |
-| Minimal archive | PASS | Explicit allowlist of 11 runtime files; no mocks, reports, tests, installers, caches, or npm packages. |
+| Minimal archive | PASS | Explicit allowlist of 13 runtime files; no mocks, reports, tests, installers, caches, or npm packages. |
 | Native UI | PASS | GTK/libadwaita controls and native font, color, and file choosers. |
 
 A catalog search for the proposed name returned no exact match in the top results. This is a preliminary name check, not a reservation or an exhaustive trademark search. Recheck the name during upload.
 
+## Four-group architecture
+
+The root schema inherits the shared group keys and retains its original fixed settings path, preserving Group 1 without migration. Three child schemas inherit the same keys with separate paths and default corners. `group-count` is restricted to 1–4; `shared/groups.js` rejects invalid group indices before settings lookup. There are at most 40 cached clock records, one timer, and one login1 subscription. Changing group count does not rebuild surviving groups.
+
 ## Maintainer walkthrough
 
-Start with `extension.js`: `enable()` constructs and starts one controller; `disable()` calls its synchronous cleanup and releases it. Follow the controller's `_configure()` for settings and actor creation, `_update()` for formatting, `_syncVisibility()` for desktop visibility, and `_schedule()`/`_stopTimer()` for timer ownership. The private `_backgroundGroup` integration is the main API coupling to recheck for each Shell version.
+Start with `extension.js`: `enable()` constructs one `ClockManager`; `disable()` synchronously cleans it up. `shell/manager.js` owns up to four controllers, one shared timer, and shared monitor/Overview/sleep signals. Follow the controller's `_configure()` for group settings and actor creation, `_update()` for formatting, and `_syncVisibility()` for desktop visibility. Timer ownership resides in the manager's `_schedule()`/`_stopTimer()`. The private `_backgroundGroup` integration is the main API coupling to recheck for each Shell version.
 
-`shared/model.js` validates clock settings before use, caps the raw JSON string at 32,768 characters, limits records to ten, and truncates descriptions to 60 characters. Time-zone identifiers cannot be filesystem paths. Formatting delegates DST and offsets to GLib. CSS text is quoted/escaped; colors accept only six-digit hex values. Shell image paths must match the managed directory and generated filename format. These are resilience measures, not a sandbox against other programs running as the same user.
+`shared/model.js` validates clock settings before use, caps the raw JSON string at 32,768 characters, limits records to ten per group, and truncates descriptions to 60 characters. Time-zone identifiers cannot be filesystem paths. Formatting delegates DST and offsets to GLib. CSS text is quoted/escaped; colors accept only six-digit hex values. Shell image paths must match the managed directory and generated filename format. These are resilience measures, not a sandbox against other programs running as the same user.
 
-`prefs.js` opens the separate preferences process. `prefs/window.js` owns its settings signal and cancellables; edits are saved only if the clock-list snapshot still matches. `prefs/zones.js` reads the installed zone database. `prefs/images.js` rejects non-local/non-regular input, reads at most 10 MB plus one overflow-detection byte, checks raster signatures, and asynchronously decodes the bounded snapshot to a maximum 2048-pixel output. Preferences save a managed copy and remove only its prior managed image. Original files remain untouched.
+`prefs.js` opens the separate preferences process. `prefs/window.js` owns its settings signal and cancellables; edits are saved only if the clock-list snapshot still matches. `prefs/zones.js` reads the installed zone database. `prefs/images.js` rejects non-local/non-regular input, reads at most 10 MB plus one overflow-detection byte, checks raster signatures, and asynchronously decodes the bounded snapshot to a maximum 2048-pixel output. Preferences cancel pending image selection/import on group changes, unbind old group controls, and preserve settings when groups are hidden. Preferences save a managed copy and remove only its prior managed image when no other group references it. Original files remain untouched.
 
 The image decoder is still an operating-system library; this does not prove resistance to every malformed image or bound internal decompression memory. The compressed input cap and output dimensions are not a pre-decode pixel budget. This residual limitation is documented in the security report and merits independent review.
 

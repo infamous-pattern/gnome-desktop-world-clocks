@@ -3,7 +3,9 @@
 ## Structure
 
 - `extension.js`: enable/disable entry point; no objects or signal connections at module scope.
-- `shell/controller.js`: owns the desktop actors, bounded zone cache, visibility, positioning, and single update source.
+- `shell/manager.js`: owns up to four controllers, one shared update source, and common desktop/sleep signals.
+- `shell/controller.js`: owns one group’s desktop actors, bounded zone cache, visibility, and positioning.
+- `shared/groups.js`: bounded group selection and settings paths; Group 1 preserves the original path.
 - `prefs.js`, `prefs/window.js`, `prefs/zones.js`, `prefs/images.js`: separate GTK/libadwaita process; native font/color/file choosers, cancellable database/image/status reads, and GSettings edits.
 - `shared/model.js`: formatting, date comparisons, input normalization, and scheduling arithmetic. Imports GLib only.
 - `schemas/`: persistent clock and appearance settings.
@@ -78,3 +80,11 @@ The private bus is a test transport, not a running systemd/logind/time service. 
 Time and day labels now use end alignment within the shared time column. A regression check measures the rendered text's right edges with unequal time widths and visible day labels. The full GNOME 50.4 suite passes with this correction, along with lint, 25 model checks, and 27 adversarial checks. The same regression check fails against the previous controller, confirming it detects the reported left-alignment behavior. The earlier 49.9/51.beta core results predate this correction.
 
 One initial isolated run crashed in GNOME's native text-shadow paint pipeline (`st_label_paint_node`); a subsequent attempt exposed a startup timing assumption. The harness now waits up to five seconds for the extension controller after Shell startup. Two subsequent full runs passed, including shadow rendering. The native crash was not reproduced and is not claimed to be fixed by the startup wait; investigate further if it recurs.
+
+## Four independent groups (2026-09-04)
+
+The schema keeps Group 1 at the original path and adds three child settings paths with inherited keys. Group count is constrained to 1–4. Removing a group releases its controller, signals, and actors while preserving its settings. Preferences unbind replaced controls and cancel file selection/image imports when switching groups. Image replacement checks all four saved groups before deleting a managed file.
+
+The manager shares one timer and one system sleep subscription across all groups. A visible seconds group enables second-boundary wakeups; minute-only groups only reformat when the minute changes. Empty/hidden groups never keep the timer alive. The group suite tests 40 clocks, distinct styling, original settings preservation, group hiding/restoration, mixed refresh rates, sleep/Overview pause, and full cleanup.
+
+The four-group build passed the full GNOME 50.4 native suite, including image handling and screenshot capture, and the core suite on GNOME 49.9 and 51.beta. The core runs exclude image tests and physical-session behavior. Lint, 25 model checks, 33 adversarial checks, the dependency audit (zero known vulnerabilities), and the directory secret scan (zero findings) also passed. All 13 packaged files match the recorded runtime hashes.
