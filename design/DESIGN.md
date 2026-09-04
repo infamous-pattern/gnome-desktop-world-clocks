@@ -11,7 +11,7 @@ User-facing name: **Desktop World Clocks**.
 
 1. Support up to ten independently selected time zones, including multiple labels for the same zone.
 2. Offer the complete current system time-zone database, UTC, and recognized aliases. Persist zone identifiers, not hard-coded offsets or abbreviations.
-3. Allow a custom description for each clock. The preview accepts up to 60 characters and wraps long text.
+3. Allow an optional custom description for each clock. If omitted or cleared, use the selected time zone’s city/location name (for example, `America/New_York` becomes `New York`). Automatically filled descriptions follow subsequent zone selections; user-written descriptions are preserved. The preview accepts up to 60 characters and wraps long text.
 4. Provide installed-font selection, size, and color. Version 01 applies appearance to all clocks together.
 5. Derive all clock readings from one synchronized system clock. Apply each selected zone's daylight-saving and historical rule changes through the system time-zone database.
 6. Support nearby NTP sources and a specified local/custom NTP server, with truthful synchronization status.
