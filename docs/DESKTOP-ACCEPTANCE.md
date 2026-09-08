@@ -11,24 +11,31 @@ Results below are the owner's observations, separate from the automated virtual-
 - Font selection, font size, global text color, opacity, and text-shadow controls behave as expected.
 - Layouts look good except for the aligned time column's right justification.
 
-## Correction awaiting desktop retest
+## Aligned time column confirmed by the owner
 
-Aligned Time Column now right-aligns each time and its optional day label inside the shared column. Labels with different rendered widths end at the same right edge. The new regression check measures text layout boundaries in GNOME 50.4; the full isolated suite, lint, model checks, and adversarial input checks pass. A native example is available in [desktop-aligned.png](desktop-aligned.png).
+The owner confirmed that Aligned Time Column right-aligns each time and its optional day label inside the shared column. Labels with different rendered widths end at the same right edge. The regression check measures text layout boundaries in GNOME 50.4; the full isolated suite, lint, model checks, and adversarial input checks pass. A native example is available in [desktop-aligned.png](desktop-aligned.png).
 
-The updated installed JavaScript requires a fresh GNOME session before the owner can confirm this fix on the physical desktop.
+## Four-group feature confirmed by the owner
 
-## Four-group feature awaiting desktop retest
-
-The extension now supports four independent groups with up to ten clocks each. The Groups page selects the count and the group edited by Clocks/Appearance. Group 1 uses the existing settings path; hidden groups retain their configuration. The automated suite covers 40 clocks, shared scheduling, independent settings, group removal/restoration, and preferences image cancellation. A physical login and four-corner check are still required.
+The owner confirmed that four groups appear on the physical desktop and that changing Group 2 appearance does not affect Group 1. The extension supports up to ten clocks per group. The Groups page selects the count and the group edited by Clocks/Appearance. Group 1 uses the existing settings path; hidden groups retain their configuration. The automated suite covers 40 clocks, shared scheduling, independent settings, group removal/restoration, and preferences image cancellation.
 
 ## Subsequent desktop feedback
 
-The owner confirmed that four groups appear and an appearance edit affects only the selected group. The Inline layout now adds three extra spaces after the combined clock name/abbreviation, before the dash and time. The full GNOME 50.4 suite passes; the visual spacing change awaits a fresh desktop login. Background checks remain pending.
+The owner confirmed the Inline layout's three extra spaces after the combined clock name/abbreviation, before the dash and time. The full GNOME 50.4 suite passes.
+
+## Clock controls and backgrounds confirmed by the owner
+
+On 2026-09-08, the owner confirmed the following behavior on the physical GNOME desktop:
+
+- Clocks can be added, removed, and reordered.
+- A blank custom description falls back to the selected time-zone name.
+- Time-zone abbreviations can be hidden independently for each clock.
+- Global and per-clock font colors work as expected.
+- Transparent, solid-color, and local-image backgrounds work as expected, including image replacement.
+- Appearance changes made to Group 2 do not affect Group 1.
 
 ## Still pending
 
-- Clock add/remove/reorder, description fallback, per-clock color and abbreviation controls.
-- Transparent, solid, and local-image backgrounds; native file selection and image replacement.
 - Lock/unlock, suspend/resume, Overview, and full-screen applications.
 - Available monitor configurations and display scaling.
 - Time-status display and settings persistence across login.
