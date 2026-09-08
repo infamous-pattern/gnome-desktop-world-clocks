@@ -49,7 +49,7 @@ The desktop component has one shared timer, aligned to minute boundaries by defa
 
 The native preferences process loads fonts and the time-zone list only when needed. Selected PNG/JPG/WebP images must be local regular files and at most 10 MB; bounded reads and raster-signature checks enforce that limit before decoding; preferences prepare a copy no larger than 2048 × 2048 pixels in `$XDG_DATA_HOME/desktop-world-clocks` (normally `~/.local/share/desktop-world-clocks`). Replacing a group’s image removes its previous managed copy if no other group references it. The original stays untouched. Missing images render without an image and can be replaced in preferences.
 
-These are implemented resource controls, not measured CPU or memory guarantees. Leave seconds off and use a transparent background for the lowest update and image-memory cost.
+These resource controls and the measured observations recorded in the [development notes](docs/DEVELOPMENT.md) are not CPU or memory guarantees. Leave seconds off and use a transparent background for the lowest update and image-memory cost.
 
 ![Native preferences](docs/preferences.png)
 
@@ -82,14 +82,6 @@ gnome-extensions uninstall desktop-world-clocks@infamous-pattern.github.io
 
 Uninstalling leaves saved preferences and the managed image available for a future installation.
 
-## GNOME review preparation
-
-See the [submission checklist and maintainer walkthrough](docs/GNOME-SUBMISSION.md). Code, packaging, and security checks are prepared; maintainer review, public support access, and the outstanding version/session tests remain before upload.
-
-## Security review
-
-An [initial security review](docs/SECURITY-REVIEW.md) records dependency and secret-scan results, targeted input checks, and remaining hardening work. It is not an independent security audit.
-
 ## Development
 
 ```sh
@@ -106,5 +98,11 @@ The Shell test creates a disposable software-rendered Wayland session with separ
 The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. It has not been reviewed or approved by extensions.gnome.org. The source includes the guide's required AI-generation notice; a maintainer must understand and maintain the code before any submission there.
 
 The approved browser concept remains in [design/preview.html](design/preview.html); its time-source controls are historical mockups. The actual extension uses the existing system service as selected during implementation. See [design decisions](design/DESIGN.md).
+
+## Credits
+
+Project concept, product direction, desktop testing, and maintenance: **James Senecal**.
+
+Extension coding, tests, documentation, and build tooling: **OpenAI Codex**, working collaboratively with and under the review of James Senecal.
 
 License: GPL-2.0-or-later. See [LICENSE](LICENSE).
