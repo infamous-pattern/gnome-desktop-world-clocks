@@ -1,20 +1,20 @@
 {
-  "date": "2026-09-04",
-  "archive_sha256": "db43f0eacf5dcf636d6b691c9efd2948f58de6cc7804f8a59ce906609d66c4a4",
+  "date": "2026-09-08",
+  "archive_sha256": "2cd63e8766a0bb4840afd2b922a05d4aa08348c654032af8866e45f8e9c2b8dc",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
     "extension.js": "1269acd041c0539a29b8abcfda51d5cc4ad92804459dcea595ffcb7ff0a196cd",
     "metadata.json": "598b4e9e0a9119733e184c634607f3c76d7c65cd2dc9ada8fb48089f6d0fc218",
     "prefs/about.js": "241a9e9a3b6774dc76508744e6fa8468a5ade9e49da5c9b1797e68a70193314c",
     "prefs/images.js": "bf78c1fa082a3bb5e3af17e3919a5d9705fe988f2f5ebe695f8e99c674b5137b",
-    "prefs/window.js": "2d2ff76fdb25b41a9a2a62e423ccfc46154b8b7a371b4981c974f4d613988f8f",
+    "prefs/window.js": "fad5640bae7475330644fefdcd88ffd817289493c7b62da1d063eb99eb2c9c48",
     "prefs/zones.js": "06e38733a232b68be734a4df7c340e3e98671ad9d6b9d3eb31bbdfccfb29a22a",
     "prefs.js": "d515ecf70aa1c06d92017739872c3c031422168819853c3f184e4a93fd381bb3",
     "schemas/gschemas.compiled": "9291ef12c611946852ed73484212ff53bce15660d99d2d804596366cdb9388b3",
     "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f2e4ae3562992146e88e661e0952687e71f890d88849b51cca8ef1715097710c",
     "shared/groups.js": "498175d4bfa2ecabc6327abb1e3a377bcb33af0c5a9b20dff0bb527aaded5afe",
     "shared/model.js": "2cb8981854fc7ee8d5918fdca3c4d0c4de5ed26d1c4377e6c0ff2284ca975a25",
-    "shell/controller.js": "55f75efb940c9274d9fc2b675e13e5ac5b22cc3d3fd5fa73656be71f2c08cdde",
+    "shell/controller.js": "49bf10c022ddbb3609fea8246111e9c715307d1ad10de131e27e6cb34c78ad68",
     "shell/manager.js": "2d7b0e2ebe4b62da9ec90e26b6d32575f4b99a664b1379b0d376a31bad384974"
   },
   "validation": {
@@ -24,7 +24,10 @@
     "npm_known_vulnerabilities": 0,
     "working_tree_secret_findings": 0,
     "aligned_text_right_edge_check": "pass on GNOME 50.4; unequal time widths and day labels",
-    "four_group_checks": "pass: 40 clocks, bounded groups, independent settings, shared scheduling, hiding/restoring, preferences, and cleanup"
+    "four_group_checks": "pass: 40 clocks, bounded groups, independent settings, shared scheduling, hiding/restoring, preferences, and cleanup",
+    "physical_acceptance": "pass on available single-monitor GNOME 50.4 desktop; multi-monitor arrangement unavailable",
+    "resource_observation": "no measurable incremental CPU cost in a 45-second whole-Shell comparison; about 1.8 MiB memory difference after re-enabling; zero extension errors",
+    "clean_log_checks": "pass: platform-specific application launcher and no invalid St length warning"
   },
   "gnome_runtime": [
     {
@@ -32,29 +35,28 @@
       "environment": "Fedora 43 rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Four-group build before the Inline spacing and About-tab updates."
+      "scope_note": "Current build passed the core suite, including the GioUnix preferences launcher and clean CSS warning gate; images and screenshots excluded."
     },
     {
       "version": "50.4",
       "environment": "Fedora 44 isolated Wayland session",
       "mode": "full automated suite",
       "result": "pass",
-      "scope_note": "Full suite passed with the About tab and Inline spacing update."
+      "scope_note": "Current build passed the full suite, including image handling, the GioUnix preferences launcher, and clean CSS warning gate."
     },
     {
       "version": "51.beta",
       "environment": "Fedora development rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Four-group build before the Inline spacing and About-tab updates."
+      "scope_note": "Current build passed the core suite, including the GioUnix preferences launcher and clean CSS warning gate; images and screenshots excluded."
     }
   ],
   "remaining": [
     "Maintainer manual source review and AI notice removal",
     "Public support repository access",
     "GNOME 49 and 51 image tests",
-    "Physical-session checks",
     "Final GNOME 51 release validation"
   ],
-  "follow_up": "2026-09-04: add native About preferences page with license, metadata version/targets, project/issues links and time/privacy information. Lint and full GNOME 50.4 suite pass; native About screenshot visually checked. Earlier model/security and 49.9/51.beta core results are retained with their scope."
+  "follow_up": "2026-09-08: physical acceptance passed on available single-monitor hardware. Updated the Date & Time launcher to GioUnix.DesktopAppInfo, removed an unsupported St background-position declaration, and added a regression gate for its warning. Lint, model, security, full GNOME 50.4, and current-build GNOME 49.9/51.beta core suites pass."
 }

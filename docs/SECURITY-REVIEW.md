@@ -31,7 +31,7 @@ The pre-existing ESLint, model tests, and isolated GNOME lifecycle tests are use
 2. **Image decoding needs further hostile-file testing.** A compressed file-size limit and a 2048-pixel output limit do not prove bounded memory/CPU inside every decoder. The selected image is decoded in the preferences process, which is separate from Shell but is not a security sandbox. A pre-decode pixel budget, strict regular-file checks, bounded input reads, and malformed-image testing are follow-up hardening opportunities. No exploitable decoder flaw was demonstrated in this review.
 3. **Local settings are trusted configuration, not a sandbox boundary.** Clock records are truncated after JSON parsing; exceptionally large externally written settings can still impose parsing cost. Image paths can also be changed directly by another process running as the same user. A raw-settings size limit and stricter managed-path policy would provide additional resilience. No privilege-escalation path was identified.
 4. The browser prototype is not shipped. Gitleaks included its committed history, but runtime application-security review focused on the extension.
-5. GNOME 49 and 51 runtime checks, native-library fuzzing, continuous security scanning, and a third-party review remain outstanding. No continuous scanner has been enabled by this one-time review.
+5. Full GNOME 49 and 51 image/runtime checks, native-library fuzzing, continuous security scanning, and a third-party review remain outstanding. No continuous scanner has been enabled by this one-time review.
 
 ## Reproduce the automated scans
 
@@ -65,4 +65,10 @@ Preferences cancel group-specific file/image operations when switching groups, r
 
 The manager owns one timer and one sleep subscription and destroys all group actors and signals on disable. Forty-clock lifecycle and mixed-refresh tests pass on GNOME 50.4 and in the 49.9/51.beta core environments. There are no new network, subprocess, or privileged operations.
 
-Checks on this build: 33 adversarial input checks, zero known npm dependency vulnerabilities, and zero Gitleaks directory findings. These are targeted checks, not an independent security audit. Container image tests and physical desktop/resource measurements remain pending.
+Checks on this build: 33 adversarial input checks, zero known npm dependency vulnerabilities, and zero Gitleaks directory findings. These are targeted checks, not an independent security audit.
+
+## Physical/runtime follow-up (2026-09-08)
+
+Physical acceptance passed on the available single-monitor GNOME 50.4 desktop, including the time-status controls and settings persistence. A short whole-Shell resource observation found no measurable incremental CPU cost, approximately 1.8 MiB of memory difference after re-enabling the current eight-clock configuration, and zero extension errors. This is not a precise per-extension benchmark.
+
+The time-settings launcher was updated from the compatibility-warning path to `GioUnix.DesktopAppInfo`. An unsupported St background-position declaration was removed, and the isolated harness now rejects its exact invalid-length warning. These changes introduce no new network, file, subprocess, or privileged operations. Lint, 25 model checks, 33 adversarial checks, the full GNOME 50.4 suite, and current-build GNOME 49.9/51.beta core suites pass.

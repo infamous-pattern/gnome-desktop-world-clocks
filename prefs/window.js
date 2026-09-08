@@ -5,6 +5,7 @@
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
+import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
@@ -462,7 +463,7 @@ export class Preferences {
         const settings = new Gtk.Button({label: _('Open Date & Time')});
         settings.connect('clicked', () => {
             try {
-                const app = Gio.DesktopAppInfo.new('gnome-datetime-panel.desktop');
+                const app = GioUnix.DesktopAppInfo.new('gnome-datetime-panel.desktop');
                 if (!app)
                     throw new Error(_('GNOME Date & Time settings are not installed.'));
                 app.launch([], null);

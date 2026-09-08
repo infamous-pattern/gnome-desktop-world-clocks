@@ -152,7 +152,7 @@ export class ClockController {
         const path = this._settings.get_string('background-image');
         if (mode === 'image' && managedImagePath(path)) {
             const uri = Gio.File.new_for_path(path).get_uri();
-            return `${base} background-image: url(${cssString(uri)}); background-size: cover; background-position: center;`;
+            return `${base} background-image: url(${cssString(uri)}); background-size: cover;`;
         }
         return base;
     }

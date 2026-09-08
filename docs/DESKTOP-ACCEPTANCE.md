@@ -47,9 +47,24 @@ On 2026-09-08, the owner confirmed the following behavior on the physical GNOME 
 
 On 2026-09-08, the owner confirmed that the four clock groups remain visible, correctly positioned, aligned, and unclipped after changing the physical desktop's display scaling and returning to the normal setting. The available system has one 5120 x 2160 monitor, so a multi-monitor arrangement was not available for physical testing.
 
-## Still pending
+## Time service and settings persistence confirmed by the owner
 
-- Time-status display and settings persistence across login.
-- Resource measurements and longer-running use.
+On 2026-09-08, the owner confirmed the following behavior on the physical GNOME desktop:
+
+- The Time sync page reports the system synchronization status.
+- Refresh status updates the displayed check time.
+- Open Date & Time launches the GNOME Date & Time settings panel.
+- Clock groups, positions, colors, backgrounds, descriptions, and abbreviation choices persist after logging out and back in.
+
+## Resource observation and extended acceptance
+
+On 2026-09-08, a 45-second enabled/disabled observation used the owner's current one-group, eight-clock, minute-only configuration. The measurement covered the complete GNOME Shell service rather than the extension in isolation:
+
+- Enabled Shell CPU time was 7.799 seconds, or 17.3% of one CPU core during the interval.
+- Disabled Shell CPU time was 8.415 seconds, or 18.7% of one CPU core during the interval. Normal Shell and desktop activity exceeded any measurable extension CPU cost in this sample.
+- Re-enabling the extension changed whole-service memory by approximately 1.8 MiB relative to the disabled endpoint. This is an observation, not a precise per-extension allocation measurement.
+- GNOME Shell reported no extension errors after the comparison, and the clocks returned in the active state.
+
+Physical acceptance sessions from 2026-09-04 through 2026-09-08 included repeated settings changes, login, lock/unlock, suspend/resume, Overview, full-screen, background, and scaling checks without a reported functional failure. Multi-monitor behavior remains untested because the available system has one monitor.
 
 GNOME 49 and 51 testing gaps remain documented in [DEVELOPMENT.md](DEVELOPMENT.md).

@@ -92,3 +92,11 @@ The four-group build passed the full GNOME 50.4 native suite, including image ha
 ## About tab (2026-09-04)
 
 The native About page displays the GPL-2.0-or-later license, metadata version (or Development build), declared GNOME targets, project and issue links, and a short time/privacy description. Link buttons only open their destinations on user activation. The page remains available when switching clock groups. The full GNOME 50.4 suite and lint pass; the native screenshot was visually checked. The runtime allowlist now contains 14 files. No desktop timer or clock rendering code changed for this addition.
+
+## Physical acceptance, clean logs, and resource observation (2026-09-08)
+
+The owner confirmed clock controls, description fallback, abbreviation toggles, global/per-clock colors, all background modes, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, display scaling, time-status controls, and settings persistence across login. The available physical system has one 5120 x 2160 monitor, so a multi-monitor arrangement was not available.
+
+The physical Time sync test exposed GNOME 50's migration of `Gio.DesktopAppInfo` to `GioUnix.DesktopAppInfo`; the preferences launcher now uses the platform-specific API. The isolated test log also exposed an unsupported `background-position: center` declaration. St already centers an image when no position is set, so the rejected declaration was removed without changing the accepted image-background appearance. The harness now fails on that exact invalid-length warning. Lint, 25 model checks, 33 adversarial checks, the full GNOME 50.4 suite, and the GNOME 49.9/51.beta core suites pass after both corrections.
+
+A 45-second enabled/disabled observation used the current physical one-group, eight-clock, minute-only configuration. Because the clocks run inside GNOME Shell, the readings cover the whole Shell service and normal desktop activity. Enabled CPU time was 7.799 seconds (17.3% of one core); disabled CPU time was 8.415 seconds (18.7%). The sample therefore found no measurable incremental extension CPU cost. Whole-service memory after re-enabling was approximately 1.8 MiB above the disabled endpoint. GNOME Shell reported zero extension errors. These bounded observations must not be presented as isolated extension benchmarks.

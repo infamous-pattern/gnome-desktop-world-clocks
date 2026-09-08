@@ -9,7 +9,7 @@ Reviewed against the current [EGO review guidelines](https://gjs.guide/extension
 1. **Maintainer review.** The owner confirmed they can review and maintain the JavaScript. Read the final source and the walkthrough below, run the checks, and resolve anything you cannot explain. GNOME's maintainership guidance asks the qualified maintainer to manually remove the three AI-notice comment lines in each runtime JavaScript file after review. They remain present intentionally. No build step strips or conceals them.
 2. **Public support access.** The metadata URL currently points to a private GitHub repository with Issues enabled. Before upload, make this project public or provide an accessible project/support repository and update the URL. The prepared repository contains the source, GPL license, documentation, design prototype, test screenshots, and security reports; assess all of it before changing visibility. No visibility change has been made.
 3. **Version validation.** The development build retains the requested 49/50/51 targets. GNOME 50.4 passed the full isolated automated suite; GNOME 49.9 and 51.beta passed the core suite in containers, excluding images/screenshots due to nested decoder sandbox restrictions. Complete their runtime checks before claiming verified compatibility. Alternatively, explicitly decide to submit an initial build listing only 50 while retaining 49/51 as future validation targets. That decision has not been made for the owner.
-4. **Desktop acceptance.** Clock controls, backgrounds, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, and display scaling have passed on the owner's physical GNOME desktop. The available system has one monitor, so a multi-monitor arrangement was not available for physical testing. Complete time-status persistence and longer-running resource checks. These are release-quality checks, not a claim that EGO tests every behavior. Inspect logs for extension errors.
+4. **Desktop acceptance.** Clock controls, backgrounds, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, display scaling, time-status controls, and settings persistence across login have passed on the owner's physical GNOME desktop. A short whole-Shell enabled/disabled observation found no measurable incremental CPU cost and about 1.8 MiB of memory difference after re-enabling the current eight-clock configuration. The available system has one monitor, so a multi-monitor arrangement was not available for physical testing. These are release-quality observations, not a claim that EGO tests every behavior or a precise per-extension resource benchmark.
 5. **Build and inspect.** After maintainer review and any metadata changes, rerun the commands below and inspect the submission ZIP. Upload it while signed in to the owner's account at [extensions.gnome.org](https://extensions.gnome.org/). Follow the website's current upload prompts and review discussion. No upload has been performed.
 
 ## Rule-to-evidence review
@@ -27,6 +27,7 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | Other extensions | PASS | Runtime does not read, enable, disable, or modify other extensions. Test-only extension-manager calls are excluded from ZIP. |
 | Readable code | PASS | Unminified ES modules; lint and package checks enforce the 200-character line limit. |
 | Logging | PASS | No clock-tick logging; exceptional managed-image cleanup failure is reported once per operation. |
+| Resource ownership | PASS | One timer serves every visible group; empty groups keep no timer. A physical enabled/disabled observation found no measurable incremental CPU cost, about 1.8 MiB whole-Shell memory difference after re-enabling, and no extension errors. |
 | GObject disposal | N/A | No `run_dispose()`. |
 | External scripts/binaries | PASS | No executable or library bundled. Development Python/Node tools excluded. Compiled schema is data and the XML is also included. |
 | Clipboard | N/A | No clipboard access or shortcuts. |
@@ -42,7 +43,7 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | License/attribution | PASS | GPL-2.0-or-later source headers and license text included. No code copied from another extension was identified. |
 | Artwork | PASS for ZIP | No bundled logos, wallpapers, fonts, or images. New review screenshot uses a plain-color desktop; historic prototype/screenshots must not be mistaken for licensed bundled assets. |
 | Minimal archive | PASS | Explicit allowlist of 14 runtime files; no mocks, reports, tests, installers, caches, or npm packages. |
-| Native UI | PASS | GTK/libadwaita controls and native font, color, and file choosers. |
+| Native UI | PASS | GTK/libadwaita controls and native font, color, and file choosers. GNOME 50's platform-specific application launcher uses `GioUnix.DesktopAppInfo`. |
 
 A catalog search for the proposed name returned no exact match in the top results. This is a preliminary name check, not a reservation or an exhaustive trademark search. Recheck the name during upload.
 

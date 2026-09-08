@@ -70,8 +70,12 @@ with tempfile.TemporaryDirectory(prefix="world-clocks-test-") as temporary:
                     break
                 time.sleep(0.1)
             process.wait(timeout=5)
-    for line in (results / "shell.log").read_text().splitlines():
+    output = (results / "shell.log").read_text()
+    for line in output.splitlines():
         if any(marker in line for marker in ["PASS:", "Script failed", "JS ERROR", "test failed"]):
             print(line)
+    if "Ignoring length property that isn't a number" in output:
+        print("Extension CSS produced an invalid length warning")
+        raise SystemExit(1)
     print(f"Isolated GNOME test exit status: {returncode}")
     raise SystemExit(returncode)
