@@ -34,9 +34,17 @@ On 2026-09-08, the owner confirmed the following behavior on the physical GNOME 
 - Transparent, solid-color, and local-image backgrounds work as expected, including image replacement.
 - Appearance changes made to Group 2 do not affect Group 1.
 
+## Session behavior confirmed by the owner
+
+On 2026-09-08, the owner confirmed the following behavior on the physical GNOME desktop:
+
+- Clocks return correctly after locking and unlocking, without duplicate groups.
+- Clocks resume with the correct time after system suspend and resume.
+- Clocks hide while the Overview is open and return when it closes.
+- Clocks hide on a monitor containing a full-screen application and return after full-screen mode ends.
+
 ## Still pending
 
-- Lock/unlock, suspend/resume, Overview, and full-screen applications.
 - Available monitor configurations and display scaling.
 - Time-status display and settings persistence across login.
 - Resource measurements and longer-running use.
