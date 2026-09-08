@@ -43,9 +43,12 @@ On 2026-09-08, the owner confirmed the following behavior on the physical GNOME 
 - Clocks hide while the Overview is open and return when it closes.
 - Clocks hide on a monitor containing a full-screen application and return after full-screen mode ends.
 
+## Display scaling confirmed by the owner
+
+On 2026-09-08, the owner confirmed that the four clock groups remain visible, correctly positioned, aligned, and unclipped after changing the physical desktop's display scaling and returning to the normal setting. The available system has one 5120 x 2160 monitor, so a multi-monitor arrangement was not available for physical testing.
+
 ## Still pending
 
-- Available monitor configurations and display scaling.
 - Time-status display and settings persistence across login.
 - Resource measurements and longer-running use.
 
