@@ -2,15 +2,15 @@
 
 Reviewed against the current [EGO review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and [best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html) on 2026-09-04.
 
-**Status: maintainer source review complete; public repository access and remaining compatibility validation still precede upload.** This document records our checks, not approval by GNOME reviewers.
+**Status: submitted to extensions.gnome.org as Version 1 and awaiting review.** This document records our checks and submission status, not approval by GNOME reviewers.
 
 ## Remaining steps
 
 1. **Maintainer review — complete.** The owner reviewed the final runtime source in four blocks, confirmed that they understand it and can maintain the JavaScript, and manually removed the three AI-notice comment lines from all ten runtime JavaScript files. No build step stripped or concealed them.
-2. **Public support access.** The metadata URL currently points to a private GitHub repository with Issues enabled. Before upload, make this project public or provide an accessible project/support repository and update the URL. The prepared repository contains the source, GPL license, documentation, design prototype, test screenshots, and security reports; assess all of it before changing visibility. No visibility change has been made.
-3. **Version validation.** The development build retains the requested 49/50/51 targets. GNOME 50.4 passed the full isolated automated suite; GNOME 49.9 and 51.beta passed the core suite in containers, excluding images/screenshots due to nested decoder sandbox restrictions. Complete their runtime checks before claiming verified compatibility. Alternatively, explicitly decide to submit an initial build listing only 50 while retaining 49/51 as future validation targets. That decision has not been made for the owner.
+2. **Public support access — complete.** The metadata URL points to the public GitHub repository, with Issues enabled. A final Gitleaks 8.30.1 scan found no secrets across all 19 commits before visibility changed.
+3. **Version validation.** Version 1 was submitted with the requested 49/50/51 targets. GNOME 50.4 passed the full isolated automated suite; GNOME 49.9 and 51.beta passed the core suite in containers, excluding images/screenshots due to nested decoder sandbox restrictions. Complete the remaining 49 and 51 checks when those environments are available and upload a follow-up if they expose a compatibility issue.
 4. **Desktop acceptance.** Clock controls, backgrounds, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, display scaling, time-status controls, and settings persistence across login have passed on the owner's physical GNOME desktop. A short whole-Shell enabled/disabled observation found no measurable incremental CPU cost and about 1.8 MiB of memory difference after re-enabling the current eight-clock configuration. The available system has one monitor, so a multi-monitor arrangement was not available for physical testing. These are release-quality observations, not a claim that EGO tests every behavior or a precise per-extension resource benchmark.
-5. **Build and inspect.** After maintainer review and any metadata changes, rerun the commands below and inspect the submission ZIP. Upload it while signed in to the owner's account at [extensions.gnome.org](https://extensions.gnome.org/). Follow the website's current upload prompts and review discussion. No upload has been performed.
+5. **Build, inspect, and submit — complete.** The validated 14-file ZIP was uploaded on 2026-09-09. GNOME assigned Extension ID 10916, Review ID 74893, and Version 1 for Shell 49, 50, and 51. The approved four-group desktop image is published as the extension screenshot. The status is Unreviewed; monitor email and the review page for the reviewer decision or requested changes.
 
 ## Rule-to-evidence review
 
@@ -34,8 +34,8 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | Privileged processes | N/A | No root commands, pkexec helper, or privileged writes. |
 | Functionality | PARTIAL | GNOME 50.4 full suite and 49.9/51.beta core suites pass; their image tests and physical-session scenarios remain pending. |
 | AI provenance/maintainership | PASS | Owner reviewed the runtime source, accepted maintenance responsibility, and manually removed the AI notices. |
-| Metadata | PARTIAL | Valid UUID/schema, concise description, no version/session-mode/donation keys. Public URL access remains pending. |
-| Version declarations | PARTIAL | 49/50 are stable and 51 is the current development series at this review date; full runtime matrix remains incomplete. Recheck current release status before upload. |
+| Metadata | PASS | Valid UUID/schema, concise description, no version/session-mode/donation keys, and a public repository URL with Issues enabled. |
+| Version declarations | PARTIAL | Version 1 declares 49, 50, and 51; full GNOME 50.4 and core 49.9/51.beta suites pass, while the remaining image and physical-session matrix is incomplete. Recheck against the final GNOME 51 release before a future update. |
 | Session modes | PASS | Default user mode only; no lock-screen operation requested or selective-disable path. |
 | Settings schema | PASS | Namespaced ID/path, correctly named XML, strict compilation, XML included in ZIP. |
 | Telemetry | N/A | No tracking, uploads, or direct network client. |

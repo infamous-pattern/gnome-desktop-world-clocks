@@ -56,9 +56,24 @@
     }
   ],
   "remaining": [
-    "Public support repository access",
     "GNOME 49 and 51 image tests",
-    "Final GNOME 51 release validation"
+    "Final GNOME 51 release validation",
+    "GNOME reviewer decision and any requested changes"
   ],
-  "follow_up": "2026-09-09: maintainer source review completed in four blocks; the owner manually removed the AI notices. Lint, 25 model checks, 33 adversarial checks, dependency audit, and the full GNOME 50.4 isolated suite pass. The 14-file submission archive was built and inspected."
+  "follow_up": "2026-09-09: the validated 14-file archive was submitted to extensions.gnome.org. GNOME assigned Extension ID 10916, Review ID 74893, and Version 1 for Shell 49, 50, and 51; status is Unreviewed.",
+  "ego_submission": {
+    "date": "2026-09-09",
+    "extension_id": 10916,
+    "review_id": 74893,
+    "version": 1,
+    "status": "Unreviewed",
+    "shell_versions": [
+      "49",
+      "50",
+      "51"
+    ],
+    "extension_url": "https://extensions.gnome.org/extension/10916/desktop-world-clocks/",
+    "review_url": "https://extensions.gnome.org/review/74893",
+    "screenshot_url": "https://extensions.gnome.org/extension-data/screenshots/screenshot_10916.png"
+  }
 }
