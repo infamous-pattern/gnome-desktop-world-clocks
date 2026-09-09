@@ -28,7 +28,9 @@
     "physical_acceptance": "pass on available single-monitor GNOME 50.4 desktop; multi-monitor arrangement unavailable",
     "resource_observation": "no measurable incremental CPU cost in a 45-second whole-Shell comparison; about 1.8 MiB memory difference after re-enabling; zero extension errors",
     "clean_log_checks": "pass: platform-specific application launcher and no invalid St length warning",
-    "maintainer_review": "pass: owner reviewed all runtime source in four blocks and manually removed the required AI notices"
+    "maintainer_review": "pass: owner reviewed all runtime source in four blocks and manually removed the required AI notices",
+    "git_history_secret_findings": 0,
+    "git_history_secret_scan": "pass: Gitleaks 8.30.1 scanned all 19 commits on 2026-09-09"
   },
   "gnome_runtime": [
     {
