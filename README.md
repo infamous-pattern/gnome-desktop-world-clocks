@@ -12,6 +12,14 @@ Up to four independent groups of world clocks directly on the GNOME desktop, abo
 
 The core suite exercises real Shell and native preferences, including layouts, timers, colors, clock editing, and cleanup. Container image tests are excluded because the nested image-decoder sandbox cannot run under this host’s container restrictions. Full compatibility is not yet verified on GNOME 49 and 51. See [validation and remaining checks](docs/DEVELOPMENT.md).
 
+## Goal and design philosophy
+
+Desktop World Clocks gives people who coordinate across locations a calm, always-visible view of the times that matter to them. Its goal is to reduce the mental work of converting time zones and the interruption of opening another application. Clocks live directly on the desktop and can appear as one focused group or as independent groups arranged across corners and monitors.
+
+The extension is designed to feel like a natural part of the GNOME desktop. Clocks remain beneath application windows, do not capture clicks, and respect each user’s choices for typography, color, spacing, alignment, and background. The layouts adapt to available space so the display remains useful and legible without overwhelming the desktop.
+
+System integration, privacy, and efficiency guide the implementation. Time zones come from the installed system database, fonts come from GNOME, and every clock uses the existing system time and synchronization service. Configuration uses native GTK and libadwaita controls. One shared timer updates only when needed and pauses during Overview, suspend, and full-screen use. The extension performs no network requests, telemetry, or separate time synchronization, and it starts no helper process or permanent background service. Settings and managed background images remain local to the user’s account.
+
 ![Native desktop clocks — close-up with text shadow disabled](docs/desktop-detail.png)
 
 Native desktop detail, shown with text shadow disabled for clarity. [View the full desktop screenshot](docs/desktop.png).
@@ -95,7 +103,7 @@ npm run pack
 
 The Shell test creates a disposable software-rendered Wayland session with separate settings and data directories; it does not install into or alter the active desktop. See [development notes](docs/DEVELOPMENT.md) for test requirements and scope.
 
-The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. It has not been reviewed or approved by extensions.gnome.org. The source includes the guide's required AI-generation notice; a maintainer must understand and maintain the code before any submission there.
+The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. The maintainer reviewed the runtime source, confirmed that they understand it, and accepted responsibility for maintaining it. The extension has not yet been reviewed or approved by extensions.gnome.org.
 
 The approved browser concept remains in [design/preview.html](design/preview.html); its time-source controls are historical mockups. The actual extension uses the existing system service as selected during implementation. See [design decisions](design/DESIGN.md).
 

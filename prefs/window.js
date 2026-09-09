@@ -1,7 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Generated with AI for personal use.
-// Do NOT upload to extensions.gnome.org (EGO) unless you understand JavaScript
-// and can maintain this code.
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';

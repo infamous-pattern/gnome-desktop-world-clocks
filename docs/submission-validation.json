@@ -1,21 +1,21 @@
 {
-  "date": "2026-09-08",
-  "archive_sha256": "2cd63e8766a0bb4840afd2b922a05d4aa08348c654032af8866e45f8e9c2b8dc",
+  "date": "2026-09-09",
+  "archive_sha256": "28ac4b8f630d71f536ed14338cf3a41180ea5c668be267b9113b382b3cfb06f0",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
-    "extension.js": "1269acd041c0539a29b8abcfda51d5cc4ad92804459dcea595ffcb7ff0a196cd",
+    "extension.js": "aded40499b5605fd3ba8c57b59dc3cb827d3f2d5ca9f839b1831b8963061f747",
     "metadata.json": "598b4e9e0a9119733e184c634607f3c76d7c65cd2dc9ada8fb48089f6d0fc218",
-    "prefs/about.js": "241a9e9a3b6774dc76508744e6fa8468a5ade9e49da5c9b1797e68a70193314c",
-    "prefs/images.js": "bf78c1fa082a3bb5e3af17e3919a5d9705fe988f2f5ebe695f8e99c674b5137b",
-    "prefs/window.js": "fad5640bae7475330644fefdcd88ffd817289493c7b62da1d063eb99eb2c9c48",
-    "prefs/zones.js": "06e38733a232b68be734a4df7c340e3e98671ad9d6b9d3eb31bbdfccfb29a22a",
-    "prefs.js": "d515ecf70aa1c06d92017739872c3c031422168819853c3f184e4a93fd381bb3",
+    "prefs.js": "68037ab9e17d76e397bf00f4f272e0c5ad4b21ab77a74132e43707dc2f77c2e5",
+    "prefs/about.js": "f9f87696e166fa646bdb384acfe4b9ea5b32c3c9a4158ef161cd3ef04e1ecf1f",
+    "prefs/images.js": "6410be40aa4bde7c46e11b08520b6107f4ebbac33d260cb626e0956daa687f97",
+    "prefs/window.js": "4230a77588923fbe37042d11978a0f0a0fba3ad345bfc5b81ea64a9c3745342b",
+    "prefs/zones.js": "4fb3062b3ec9a7d1e601c3239d604ac3478f2218d77b77d2de79d5fbdc3ab3bb",
     "schemas/gschemas.compiled": "9291ef12c611946852ed73484212ff53bce15660d99d2d804596366cdb9388b3",
     "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f2e4ae3562992146e88e661e0952687e71f890d88849b51cca8ef1715097710c",
-    "shared/groups.js": "498175d4bfa2ecabc6327abb1e3a377bcb33af0c5a9b20dff0bb527aaded5afe",
-    "shared/model.js": "2cb8981854fc7ee8d5918fdca3c4d0c4de5ed26d1c4377e6c0ff2284ca975a25",
-    "shell/controller.js": "49bf10c022ddbb3609fea8246111e9c715307d1ad10de131e27e6cb34c78ad68",
-    "shell/manager.js": "2d7b0e2ebe4b62da9ec90e26b6d32575f4b99a664b1379b0d376a31bad384974"
+    "shared/groups.js": "17f59a30f32788358402c0a6f7bc5e0c246dd6110511660558a52527b8ec9352",
+    "shared/model.js": "db0511a4b9cf943a36ca10f8013c27028980c49839306181516601d6d4ab2d55",
+    "shell/controller.js": "97ebf562ecb63af0c32c68f4085ac54ed5e0afbd053e5be2a3b40555e24d5e60",
+    "shell/manager.js": "57f85a4754faf4b05d7ecc9e7dfa827a705047351b322a7e3ddbf23aabac13c3"
   },
   "validation": {
     "model_checks": 25,
@@ -27,7 +27,8 @@
     "four_group_checks": "pass: 40 clocks, bounded groups, independent settings, shared scheduling, hiding/restoring, preferences, and cleanup",
     "physical_acceptance": "pass on available single-monitor GNOME 50.4 desktop; multi-monitor arrangement unavailable",
     "resource_observation": "no measurable incremental CPU cost in a 45-second whole-Shell comparison; about 1.8 MiB memory difference after re-enabling; zero extension errors",
-    "clean_log_checks": "pass: platform-specific application launcher and no invalid St length warning"
+    "clean_log_checks": "pass: platform-specific application launcher and no invalid St length warning",
+    "maintainer_review": "pass: owner reviewed all runtime source in four blocks and manually removed the required AI notices"
   },
   "gnome_runtime": [
     {
@@ -53,10 +54,9 @@
     }
   ],
   "remaining": [
-    "Maintainer manual source review and AI notice removal",
     "Public support repository access",
     "GNOME 49 and 51 image tests",
     "Final GNOME 51 release validation"
   ],
-  "follow_up": "2026-09-08: physical acceptance passed on available single-monitor hardware. Updated the Date & Time launcher to GioUnix.DesktopAppInfo, removed an unsupported St background-position declaration, and added a regression gate for its warning. Lint, model, security, full GNOME 50.4, and current-build GNOME 49.9/51.beta core suites pass."
+  "follow_up": "2026-09-09: maintainer source review completed in four blocks; the owner manually removed the AI notices. Lint, 25 model checks, 33 adversarial checks, dependency audit, and the full GNOME 50.4 isolated suite pass. The 14-file submission archive was built and inspected."
 }

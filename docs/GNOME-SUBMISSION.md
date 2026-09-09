@@ -2,11 +2,11 @@
 
 Reviewed against the current [EGO review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and [best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html) on 2026-09-04.
 
-**Status: technically prepared for maintainer review; not yet ready to upload.** This document records our checks, not approval by GNOME reviewers.
+**Status: maintainer source review complete; public repository access and remaining compatibility validation still precede upload.** This document records our checks, not approval by GNOME reviewers.
 
 ## Remaining steps
 
-1. **Maintainer review.** The owner confirmed they can review and maintain the JavaScript. Read the final source and the walkthrough below, run the checks, and resolve anything you cannot explain. GNOME's maintainership guidance asks the qualified maintainer to manually remove the three AI-notice comment lines in each runtime JavaScript file after review. They remain present intentionally. No build step strips or conceals them.
+1. **Maintainer review — complete.** The owner reviewed the final runtime source in four blocks, confirmed that they understand it and can maintain the JavaScript, and manually removed the three AI-notice comment lines from all ten runtime JavaScript files. No build step stripped or concealed them.
 2. **Public support access.** The metadata URL currently points to a private GitHub repository with Issues enabled. Before upload, make this project public or provide an accessible project/support repository and update the URL. The prepared repository contains the source, GPL license, documentation, design prototype, test screenshots, and security reports; assess all of it before changing visibility. No visibility change has been made.
 3. **Version validation.** The development build retains the requested 49/50/51 targets. GNOME 50.4 passed the full isolated automated suite; GNOME 49.9 and 51.beta passed the core suite in containers, excluding images/screenshots due to nested decoder sandbox restrictions. Complete their runtime checks before claiming verified compatibility. Alternatively, explicitly decide to submit an initial build listing only 50 while retaining 49/51 as future validation targets. That decision has not been made for the owner.
 4. **Desktop acceptance.** Clock controls, backgrounds, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, display scaling, time-status controls, and settings persistence across login have passed on the owner's physical GNOME desktop. A short whole-Shell enabled/disabled observation found no measurable incremental CPU cost and about 1.8 MiB of memory difference after re-enabling the current eight-clock configuration. The available system has one monitor, so a multi-monitor arrangement was not available for physical testing. These are release-quality observations, not a claim that EGO tests every behavior or a precise per-extension resource benchmark.
@@ -33,7 +33,7 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | Clipboard | N/A | No clipboard access or shortcuts. |
 | Privileged processes | N/A | No root commands, pkexec helper, or privileged writes. |
 | Functionality | PARTIAL | GNOME 50.4 full suite and 49.9/51.beta core suites pass; their image tests and physical-session scenarios remain pending. |
-| AI provenance/maintainership | PENDING | Owner accepted responsibility; manual code review and notice removal remain. |
+| AI provenance/maintainership | PASS | Owner reviewed the runtime source, accepted maintenance responsibility, and manually removed the AI notices. |
 | Metadata | PARTIAL | Valid UUID/schema, concise description, no version/session-mode/donation keys. Public URL access remains pending. |
 | Version declarations | PARTIAL | 49/50 are stable and 51 is the current development series at this review date; full runtime matrix remains incomplete. Recheck current release status before upload. |
 | Session modes | PASS | Default user mode only; no lock-screen operation requested or selective-disable path. |
@@ -75,6 +75,6 @@ python3 scripts/test-shell.py
 python3 scripts/package.py --submission
 ```
 
-The last command deliberately fails until the maintainer manually removes the AI notices. It then creates `dist/submission/desktop-world-clocks@infamous-pattern.github.io.shell-extension.zip`. It validates archive inputs but cannot certify that maintainer review, public support access, or the full runtime matrix are complete.
+The last command creates `dist/submission/desktop-world-clocks@infamous-pattern.github.io.shell-extension.zip` and still rejects any runtime source containing the AI notice. It validates archive inputs but cannot certify public support access or the full runtime matrix.
 
 Rerun a secret scan of all repository history before making the project public. Keep the generated development and submission archives separate. GNOME assigns the extension's version; do not add an upload version number to `metadata.json`.
