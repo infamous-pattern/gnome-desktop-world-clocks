@@ -1,25 +1,24 @@
 {
-  "date": "2026-09-09",
-  "archive_sha256": "28ac4b8f630d71f536ed14338cf3a41180ea5c668be267b9113b382b3cfb06f0",
+  "date": "2026-09-12",
+  "archive_sha256": "b4dab35fd9c23276a3474d4e4f11c403e03156ec15bbc912d7db7e27ff2da86f",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
     "extension.js": "aded40499b5605fd3ba8c57b59dc3cb827d3f2d5ca9f839b1831b8963061f747",
     "metadata.json": "598b4e9e0a9119733e184c634607f3c76d7c65cd2dc9ada8fb48089f6d0fc218",
-    "prefs.js": "68037ab9e17d76e397bf00f4f272e0c5ad4b21ab77a74132e43707dc2f77c2e5",
     "prefs/about.js": "f9f87696e166fa646bdb384acfe4b9ea5b32c3c9a4158ef161cd3ef04e1ecf1f",
     "prefs/images.js": "6410be40aa4bde7c46e11b08520b6107f4ebbac33d260cb626e0956daa687f97",
     "prefs/window.js": "4230a77588923fbe37042d11978a0f0a0fba3ad345bfc5b81ea64a9c3745342b",
     "prefs/zones.js": "4fb3062b3ec9a7d1e601c3239d604ac3478f2218d77b77d2de79d5fbdc3ab3bb",
-    "schemas/gschemas.compiled": "9291ef12c611946852ed73484212ff53bce15660d99d2d804596366cdb9388b3",
-    "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "f2e4ae3562992146e88e661e0952687e71f890d88849b51cca8ef1715097710c",
-    "shared/groups.js": "17f59a30f32788358402c0a6f7bc5e0c246dd6110511660558a52527b8ec9352",
+    "prefs.js": "68037ab9e17d76e397bf00f4f272e0c5ad4b21ab77a74132e43707dc2f77c2e5",
+    "schemas/org.gnome.shell.extensions.desktop-world-clocks.gschema.xml": "fbdaac9f5795d369efebff62c68c63a6e896185ecb28b88038fb969dec1d879f",
+    "shared/groups.js": "5ab65e112a84a1e5ccac5dedc519579df13fe5030667afe36af3c3aacbb6e0a1",
     "shared/model.js": "db0511a4b9cf943a36ca10f8013c27028980c49839306181516601d6d4ab2d55",
     "shell/controller.js": "97ebf562ecb63af0c32c68f4085ac54ed5e0afbd053e5be2a3b40555e24d5e60",
     "shell/manager.js": "57f85a4754faf4b05d7ecc9e7dfa827a705047351b322a7e3ddbf23aabac13c3"
   },
   "validation": {
     "model_checks": 25,
-    "adversarial_checks": 33,
+    "adversarial_checks": 39,
     "image_rejection_and_cancellation_checks": 7,
     "npm_known_vulnerabilities": 0,
     "working_tree_secret_findings": 0,
@@ -30,7 +29,9 @@
     "clean_log_checks": "pass: platform-specific application launcher and no invalid St length warning",
     "maintainer_review": "pass: owner reviewed all runtime source in four blocks and manually removed the required AI notices",
     "git_history_secret_findings": 0,
-    "git_history_secret_scan": "pass: Gitleaks 8.30.1 scanned all 19 commits on 2026-09-09"
+    "git_history_secret_scan": "pass: Gitleaks 8.30.1 scanned all 19 commits on 2026-09-09",
+    "shexli": "EGO-P-002, EGO-P-004, and EGO-P-006 resolved; EGO-M-004 remains because Shexli 0.2.1 hard-codes 50 as its maximum plausible major although EGO already accepts Shell 51 targets",
+    "archive_integrity": "pass: 13 unique safe paths, each byte-matching reviewed source; generated compiled schema excluded"
   },
   "gnome_runtime": [
     {
@@ -38,29 +39,30 @@
       "environment": "Fedora 43 rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Current build passed the core suite, including the GioUnix preferences launcher and clean CSS warning gate; images and screenshots excluded."
+      "scope_note": "Corrected follow-up build passed the core suite, including the GioUnix preferences launcher and clean CSS warning gate; images and screenshots excluded."
     },
     {
       "version": "50.4",
       "environment": "Fedora 44 isolated Wayland session",
       "mode": "full automated suite",
       "result": "pass",
-      "scope_note": "Current build passed the full suite, including image handling, the GioUnix preferences launcher, and clean CSS warning gate."
+      "scope_note": "Corrected follow-up build passed the full suite, including image handling, the GioUnix preferences launcher, and clean CSS warning gate."
     },
     {
       "version": "51.beta",
       "environment": "Fedora development rootless container",
       "mode": "core-only",
       "result": "pass",
-      "scope_note": "Current build passed the core suite, including the GioUnix preferences launcher and clean CSS warning gate; images and screenshots excluded."
+      "scope_note": "Corrected follow-up build passed the core suite, including the GioUnix preferences launcher and clean CSS warning gate; images and screenshots excluded."
     }
   ],
   "remaining": [
     "GNOME 49 and 51 image tests",
     "Final GNOME 51 release validation",
+    "Upload corrected follow-up archive",
     "GNOME reviewer decision and any requested changes"
   ],
-  "follow_up": "2026-09-09: the validated 14-file archive was submitted to extensions.gnome.org. GNOME assigned Extension ID 10916, Review ID 74893, and Version 1 for Shell 49, 50, and 51; status is Unreviewed.",
+  "follow_up": "2026-09-12: a corrected 13-file follow-up archive is ready. Three schema/package Shexli findings are resolved. EGO-M-004 remains as a Shexli 0.2.1 false positive for the already-supported Shell 51 major target.",
   "ego_submission": {
     "date": "2026-09-09",
     "extension_id": 10916,
@@ -75,5 +77,24 @@
     "extension_url": "https://extensions.gnome.org/extension/10916/desktop-world-clocks/",
     "review_url": "https://extensions.gnome.org/review/74893",
     "screenshot_url": "https://extensions.gnome.org/extension-data/screenshots/screenshot_10916.png"
+  },
+  "prepared_follow_up": {
+    "date": "2026-09-12",
+    "archive_files": 13,
+    "archive_sha256": "b4dab35fd9c23276a3474d4e4f11c403e03156ec15bbc912d7db7e27ff2da86f",
+    "shell_versions": [
+      "49",
+      "50",
+      "51"
+    ],
+    "shexli_resolved": [
+      "EGO-P-002",
+      "EGO-P-004",
+      "EGO-P-006"
+    ],
+    "shexli_remaining": [
+      "EGO-M-004 analyzer false positive for Shell 51"
+    ],
+    "status": "Ready to upload"
   }
 }

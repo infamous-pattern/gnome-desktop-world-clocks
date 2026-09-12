@@ -29,6 +29,7 @@ export async function run() {
     assert(instance?._manager?._groups[0], 'Extension enabled');
     let controller = instance._manager._groups[0];
     const settings = controller._settings;
+    const rootSettings = instance._manager._settings;
     assert(controller._items.length === 8, 'Eight default clocks');
     assert(controller._actor.mapped, 'Clock surface is on the desktop');
     assert(instance._manager._timerId > 0, 'One active clock timer');
@@ -165,7 +166,7 @@ export async function run() {
         settings.reset('layout');
         settings.reset('use-12-hour');
         settings.reset('text-shadow');
-        settings.set_int('group-count', 4);
+        rootSettings.set_int('group-count', 4);
         await Scripting.sleep(150);
         const sample = JSON.parse(settings.get_string('clocks'));
         for (const [index, group] of instance._manager._groups.entries()) {
@@ -183,7 +184,7 @@ export async function run() {
             for (const key of ['clocks', 'font-size', 'font-color', 'text-shadow'])
                 group._settings.reset(key);
         }
-        settings.reset('group-count');
+        rootSettings.reset('group-count');
 
     }
     const process = Gio.Subprocess.new(['gjs', '-m', `${GLib.getenv('WORLD_CLOCK_TEST_ROOT')}/tests/prefs.js`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);

@@ -46,6 +46,8 @@ with tempfile.TemporaryDirectory(prefix="world-clocks-test-") as temporary:
     target.mkdir(parents=True)
     with zipfile.ZipFile(root / "dist" / f"{uuid}.shell-extension.zip") as archive:
         archive.extractall(target)
+    # GNOME 45+ installation compiles shipped schema XML locally; mirror that step in the direct-extraction test.
+    subprocess.run(["glib-compile-schemas", "--strict", str(target / "schemas")], check=True)
     configuration = base / "config/glib-2.0/settings"
     configuration.mkdir(parents=True)
     (configuration / "keyfile").write_text(

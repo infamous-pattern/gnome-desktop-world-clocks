@@ -2,7 +2,7 @@
 
 Reviewed against the current [EGO review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and [best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html) on 2026-09-04.
 
-**Status: submitted to extensions.gnome.org as Version 1 and awaiting review.** This document records our checks and submission status, not approval by GNOME reviewers.
+**Status: Version 1 is awaiting review; a corrected follow-up archive is ready.** This document records our checks and submission status, not approval by GNOME reviewers.
 
 ## Remaining steps
 
@@ -10,7 +10,8 @@ Reviewed against the current [EGO review guidelines](https://gjs.guide/extension
 2. **Public support access — complete.** The metadata URL points to the public GitHub repository, with Issues enabled. A final Gitleaks 8.30.1 scan found no secrets across all 19 commits before visibility changed.
 3. **Version validation.** Version 1 was submitted with the requested 49/50/51 targets. GNOME 50.4 passed the full isolated automated suite; GNOME 49.9 and 51.beta passed the core suite in containers, excluding images/screenshots due to nested decoder sandbox restrictions. Complete the remaining 49 and 51 checks when those environments are available and upload a follow-up if they expose a compatibility issue.
 4. **Desktop acceptance.** Clock controls, backgrounds, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, display scaling, time-status controls, and settings persistence across login have passed on the owner's physical GNOME desktop. A short whole-Shell enabled/disabled observation found no measurable incremental CPU cost and about 1.8 MiB of memory difference after re-enabling the current eight-clock configuration. The available system has one monitor, so a multi-monitor arrangement was not available for physical testing. These are release-quality observations, not a claim that EGO tests every behavior or a precise per-extension resource benchmark.
-5. **Build, inspect, and submit — complete.** The validated 14-file ZIP was uploaded on 2026-09-09. GNOME assigned Extension ID 10916, Review ID 74893, and Version 1 for Shell 49, 50, and 51. The approved four-group desktop image is published as the extension screenshot. The status is Unreviewed; monitor email and the review page for the reviewer decision or requested changes.
+5. **Initial submission — complete.** The validated 14-file ZIP was uploaded on 2026-09-09. GNOME assigned Extension ID 10916, Review ID 74893, and Version 1 for Shell 49, 50, and 51. The approved four-group desktop image is published as the extension screenshot.
+6. **Automated-review correction — ready to upload.** The follow-up archive contains 13 source/runtime files, omits the locally compiled schema, and replaces pathless child schemas with one correctly named fixed-path schema. Shexli no longer reports EGO-P-002, EGO-P-004, or EGO-P-006. Its remaining EGO-M-004 result is a known analyzer limitation: Shexli 0.2.1 treats every major above 50 as future, while GNOME’s current metadata guide requires major-only values and the live catalog already has active Shell 51 versions. Keep `49`, `50`, and `51` and leave the item for reviewer attention.
 
 ## Rule-to-evidence review
 
@@ -29,27 +30,27 @@ PASS means supported by source inspection or the stated tests; it is not a guara
 | Logging | PASS | No clock-tick logging; exceptional managed-image cleanup failure is reported once per operation. |
 | Resource ownership | PASS | One timer serves every visible group; empty groups keep no timer. A physical enabled/disabled observation found no measurable incremental CPU cost, about 1.8 MiB whole-Shell memory difference after re-enabling, and no extension errors. |
 | GObject disposal | N/A | No `run_dispose()`. |
-| External scripts/binaries | PASS | No executable or library bundled. Development Python/Node tools excluded. Compiled schema is data and the XML is also included. |
+| External scripts/binaries | PASS | No executable or library bundled. Development Python/Node tools and the locally compiled schema are excluded; GNOME compiles the included XML at installation. |
 | Clipboard | N/A | No clipboard access or shortcuts. |
 | Privileged processes | N/A | No root commands, pkexec helper, or privileged writes. |
 | Functionality | PARTIAL | GNOME 50.4 full suite and 49.9/51.beta core suites pass; their image tests and physical-session scenarios remain pending. |
 | AI provenance/maintainership | PASS | Owner reviewed the runtime source, accepted maintenance responsibility, and manually removed the AI notices. |
-| Metadata | PASS | Valid UUID/schema, concise description, no version/session-mode/donation keys, and a public repository URL with Issues enabled. |
+| Metadata | PASS with analyzer note | Valid UUID/schema, concise description, no version/session-mode/donation keys, and a public repository URL with Issues enabled. The Shell 51 declaration follows GNOME’s current major-only format; Shexli 0.2.1 incorrectly hard-codes 50 as its highest plausible major. |
 | Version declarations | PARTIAL | Version 1 declares 49, 50, and 51; full GNOME 50.4 and core 49.9/51.beta suites pass, while the remaining image and physical-session matrix is incomplete. Recheck against the final GNOME 51 release before a future update. |
 | Session modes | PASS | Default user mode only; no lock-screen operation requested or selective-disable path. |
-| Settings schema | PASS | Namespaced ID/path, correctly named XML, strict compilation, XML included in ZIP. |
+| Settings schema | PASS | One namespaced fixed-path schema in the matching XML filename; strict compilation passes, XML is included, and the generated binary is excluded. |
 | Telemetry | N/A | No tracking, uploads, or direct network client. |
 | Conduct/political content | PASS | Inspected runtime names, descriptions, labels, and generated review screenshot; no political messaging or abusive content. |
 | License/attribution | PASS | GPL-2.0-or-later source headers and license text included. No code copied from another extension was identified. |
 | Artwork | PASS for ZIP | No bundled logos, wallpapers, fonts, or images. New review screenshot uses a plain-color desktop; historic prototype/screenshots must not be mistaken for licensed bundled assets. |
-| Minimal archive | PASS | Explicit allowlist of 14 runtime files; no mocks, reports, tests, installers, caches, or npm packages. |
+| Minimal archive | PASS | Explicit allowlist of 13 runtime/source files; no compiled schema, mocks, reports, tests, installers, caches, or npm packages. |
 | Native UI | PASS | GTK/libadwaita controls and native font, color, and file choosers. GNOME 50's platform-specific application launcher uses `GioUnix.DesktopAppInfo`. |
 
 A catalog search for the proposed name returned no exact match in the top results. This is a preliminary name check, not a reservation or an exhaustive trademark search. Recheck the name during upload.
 
 ## Four-group architecture
 
-The root schema inherits the shared group keys and retains its original fixed settings path, preserving Group 1 without migration. Three child schemas inherit the same keys with separate paths and default corners. `group-count` is restricted to 1–4; `shared/groups.js` rejects invalid group indices before settings lookup. There are at most 40 cached clock records, one timer, and one login1 subscription. Changing group count does not rebuild surviving groups.
+One fixed-path root schema stores every group. Group 1 retains the original unprefixed keys, while Groups 2–4 use group-prefixed keys. `shared/groups.js` maps each controller and preferences page to its logical group keys and filters change signals so one group cannot reconfigure another. `group-count` is restricted to 1–4. There are at most 40 cached clock records, one timer, and one login1 subscription. Changing group count does not rebuild surviving groups. Upgrading the unreviewed Version 1 build preserves Group 1; its pathless child-schema values for Groups 2–4 cannot be migrated without shipping the schemas that the checker rejects, so those three groups return to their defaults once.
 
 ## Maintainer walkthrough
 

@@ -5,7 +5,7 @@
 - `extension.js`: enable/disable entry point; no objects or signal connections at module scope.
 - `shell/manager.js`: owns up to four controllers, one shared update source, and common desktop/sleep signals.
 - `shell/controller.js`: owns one group’s desktop actors, bounded zone cache, visibility, and positioning.
-- `shared/groups.js`: bounded group selection and settings paths; Group 1 preserves the original path.
+- `shared/groups.js`: bounded group selection and logical-to-prefixed key mapping; Group 1 preserves its original keys.
 - `prefs.js`, `prefs/window.js`, `prefs/zones.js`, `prefs/images.js`: separate GTK/libadwaita process; native font/color/file choosers, cancellable database/image/status reads, and GSettings edits.
 - `shared/model.js`: formatting, date comparisons, input normalization, and scheduling arithmetic. Imports GLib only.
 - `schemas/`: persistent clock and appearance settings.
@@ -100,3 +100,12 @@ The owner confirmed clock controls, description fallback, abbreviation toggles, 
 The physical Time sync test exposed GNOME 50's migration of `Gio.DesktopAppInfo` to `GioUnix.DesktopAppInfo`; the preferences launcher now uses the platform-specific API. The isolated test log also exposed an unsupported `background-position: center` declaration. St already centers an image when no position is set, so the rejected declaration was removed without changing the accepted image-background appearance. The harness now fails on that exact invalid-length warning. Lint, 25 model checks, 33 adversarial checks, the full GNOME 50.4 suite, and the GNOME 49.9/51.beta core suites pass after both corrections.
 
 A 45-second enabled/disabled observation used the current physical one-group, eight-clock, minute-only configuration. Because the clocks run inside GNOME Shell, the readings cover the whole Shell service and normal desktop activity. Enabled CPU time was 7.799 seconds (17.3% of one core); disabled CPU time was 8.415 seconds (18.7%). The sample therefore found no measurable incremental extension CPU cost. Whole-service memory after re-enabling was approximately 1.8 MiB above the disabled endpoint. GNOME Shell reported zero extension errors. These bounded observations must not be presented as isolated extension benchmarks.
+
+
+## GNOME automated-review follow-up (2026-09-12)
+
+The experimental Shexli report on Version 1 produced three errors and one warning. The corrected archive omits `schemas/gschemas.compiled` and uses one fixed-path schema whose filename matches its ID. Group 1 keeps its original key names; Groups 2–4 use prefixed keys through a lightweight adapter that filters settings-change signals. This resolves EGO-P-002, EGO-P-004, and EGO-P-006. Groups 2–4 from the unreviewed Version 1 test build reset to defaults once because retaining or reading the rejected pathless schemas would preserve the submission problem.
+
+Shexli 0.2.1 still emits EGO-M-004 for the valid `51` target because its rule implementation treats every major version above 50 as future. GNOME’s current metadata documentation requires major-only version strings for GNOME 40 and later, and the live extensions catalog already publishes active Shell 51 versions. The archive therefore retains `49`, `50`, and `51` for reviewer attention instead of changing correct metadata to satisfy an outdated bound.
+
+The revised build passes strict schema compilation, ESLint, 25 model checks, 39 adversarial checks, the complete isolated GNOME 50.4 suite, and the core suites on GNOME 49.9 and 51.beta. The 13-file archive has no duplicate or unsafe paths, every member byte-matches the reviewed source, and the dependency audit reports zero known vulnerabilities. The direct-extraction test now mirrors GNOME 45+ installation by compiling the shipped XML inside its disposable extension directory.

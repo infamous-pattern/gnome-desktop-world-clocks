@@ -29,6 +29,46 @@ for (const path of ['/etc/passwd', '/tmp/image.png', 'https://example.invalid/im
     check(!managedImagePath(path), 'Unmanaged image path rejected');
 const managed = GLib.build_filenamev([GLib.get_user_data_dir(), 'desktop-world-clocks', 'background-12345678-1234-1234-1234-123456789abc.png']);
 check(managedImagePath(managed), 'Managed image accepted');
+const settingsCalls = [];
+let settingsCallback = null;
+let observedKey = '';
+const fakeSettings = {
+    get_string(key) {
+        settingsCalls.push(['get_string', key]);
+        return key;
+    },
+    set_boolean(key, value) {
+        settingsCalls.push(['set_boolean', key, value]);
+        return true;
+    },
+    connect(signal, callback) {
+        settingsCalls.push(['connect', signal]);
+        settingsCallback = callback;
+        return 7;
+    },
+    disconnect(id) {
+        settingsCalls.push(['disconnect', id]);
+    },
+};
+const thirdGroup = groupSettings(fakeSettings, 2);
+check(thirdGroup.get_string('font-family') === 'group3-font-family', 'Group reads map to prefixed root keys');
+check(thirdGroup.set_boolean('show-seconds', true), 'Group writes map to prefixed root keys');
+const signalId = thirdGroup.connect('changed', (_settings, key) => {
+    observedKey = key;
+});
+settingsCallback(fakeSettings, 'group2-font-size');
+check(observedKey === '', 'Group ignores another group signal');
+settingsCallback(fakeSettings, 'group3-font-size');
+check(observedKey === 'font-size', 'Group exposes its logical signal key');
+thirdGroup.disconnect(signalId);
+check(settingsCalls.some(call => call[0] === 'disconnect' && call[1] === 7), 'Group disconnect delegates to root settings');
+let invalidKeyRejected = false;
+try {
+    thirdGroup.get_string('group-count');
+} catch (error) {
+    invalidKeyRejected = error instanceof RangeError;
+}
+check(invalidKeyRejected, 'Group adapters reject root-only settings');
 for (const index of [-1, 4, 99, 1.5, '1', NaN]) {
     let rejected = false;
     try {

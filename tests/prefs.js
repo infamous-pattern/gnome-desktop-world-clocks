@@ -154,7 +154,7 @@ app.connect('activate', () => {
         await pause(150);
         if (pendingImage)
             await pendingImage;
-        assert(preferences._groupIndex === 0 && preferences._settings === settings, 'Hiding the edited group selects Group 1');
+        assert(preferences._groupIndex === 0 && preferences._settings === preferences._allSettings[0], 'Hiding the edited group selects Group 1');
         assert(fourth.get_string('background-image') === '', 'Switching groups cancels an in-flight image import');
         sizeControl.value = 22;
         assert(fourth.get_int('font-size') === 37 && settings.get_int('font-size') === originalSize, 'Old settings bindings released');

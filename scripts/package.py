@@ -26,7 +26,7 @@ assert schema.get('id') == schema_id and schema.get('path').startswith('/org/gno
 names = [
     "metadata.json", "extension.js", "prefs.js", "LICENSE",
     "shared/model.js", "shared/groups.js", "shell/controller.js", "shell/manager.js", "prefs/window.js", "prefs/zones.js", "prefs/images.js", "prefs/about.js",
-    schema_path, "schemas/gschemas.compiled",
+    schema_path,
 ]
 paths = [root / name for name in names]
 for path in paths:

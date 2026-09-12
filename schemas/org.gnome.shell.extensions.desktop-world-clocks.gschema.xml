@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.desktop-world-clocks.group">
+  <schema id="org.gnome.shell.extensions.desktop-world-clocks" path="/org/gnome/shell/extensions/desktop-world-clocks/">
     <key name="clocks" type="s">
       <default>'[{"zone": "America/Los_Angeles", "label": "Los Angeles", "color": "", "showAbbr": true}, {"zone": "America/Chicago", "label": "Austin", "color": "", "showAbbr": true}, {"zone": "Europe/London", "label": "London", "color": "", "showAbbr": true}, {"zone": "Europe/Vienna", "label": "Vienna", "color": "", "showAbbr": true}, {"zone": "Asia/Kolkata", "label": "Pune", "color": "", "showAbbr": true}, {"zone": "Asia/Singapore", "label": "Singapore", "color": "", "showAbbr": true}, {"zone": "Asia/Tokyo", "label": "Japan", "color": "", "showAbbr": true}, {"zone": "Australia/Melbourne", "label": "Melbourne", "color": "", "showAbbr": true}]'</default>
       <summary>Ordered clock definitions</summary>
@@ -73,27 +73,226 @@
       <default>''</default>
       <summary>Local background image path</summary>
     </key>
-  </schema>
-  <schema id="org.gnome.shell.extensions.desktop-world-clocks.group2" extends="org.gnome.shell.extensions.desktop-world-clocks.group">
-    <override name="position">'top-right'</override>
-    <override name="clocks">'[{"zone":"UTC","label":"","color":"","showAbbr":true}]'</override>
-  </schema>
-  <schema id="org.gnome.shell.extensions.desktop-world-clocks.group3" extends="org.gnome.shell.extensions.desktop-world-clocks.group">
-    <override name="position">'bottom-left'</override>
-    <override name="clocks">'[{"zone":"UTC","label":"","color":"","showAbbr":true}]'</override>
-  </schema>
-  <schema id="org.gnome.shell.extensions.desktop-world-clocks.group4" extends="org.gnome.shell.extensions.desktop-world-clocks.group">
-    <override name="position">'bottom-right'</override>
-    <override name="clocks">'[{"zone":"UTC","label":"","color":"","showAbbr":true}]'</override>
-  </schema>
-  <schema id="org.gnome.shell.extensions.desktop-world-clocks" path="/org/gnome/shell/extensions/desktop-world-clocks/" extends="org.gnome.shell.extensions.desktop-world-clocks.group">
     <key name="group-count" type="i">
       <default>1</default>
-      <range min="1" max="4" />
       <summary>Number of visible clock groups</summary>
+      <range min="1" max="4" />
     </key>
-    <child name="group2" schema="org.gnome.shell.extensions.desktop-world-clocks.group2" />
-    <child name="group3" schema="org.gnome.shell.extensions.desktop-world-clocks.group3" />
-    <child name="group4" schema="org.gnome.shell.extensions.desktop-world-clocks.group4" />
+    <key name="group2-clocks" type="s">
+      <default>'[{"zone":"UTC","label":"","color":"","showAbbr":true}]'</default>
+      <summary>Group 2: Ordered clock definitions</summary>
+    </key>
+    <key name="group2-font-family" type="s">
+      <default>'Adwaita Sans'</default>
+      <summary>Group 2: Installed font family</summary>
+    </key>
+    <key name="group2-font-size" type="i">
+      <default>26</default>
+      <summary>Group 2: Font size in logical pixels</summary>
+      <range min="14" max="48" />
+    </key>
+    <key name="group2-text-opacity" type="i">
+      <default>100</default>
+      <summary>Group 2: Text opacity percentage</summary>
+      <range min="0" max="100" />
+    </key>
+    <key name="group2-font-color" type="s">
+      <default>'#ffffff'</default>
+      <summary>Group 2: Global font color</summary>
+    </key>
+    <key name="group2-layout" type="s">
+      <default>'classic'</default>
+      <summary>Group 2: Clock layout</summary>
+    </key>
+    <key name="group2-position" type="s">
+      <default>'top-right'</default>
+      <summary>Group 2: Desktop corner</summary>
+    </key>
+    <key name="group2-monitor" type="i">
+      <default>-1</default>
+      <summary>Group 2: Monitor index, or minus one for primary</summary>
+      <range min="-1" max="32" />
+    </key>
+    <key name="group2-margin" type="i">
+      <default>24</default>
+      <summary>Group 2: Distance from screen edge</summary>
+      <range min="0" max="200" />
+    </key>
+    <key name="group2-show-abbreviations" type="b">
+      <default>true</default>
+      <summary>Group 2: Enable time zone abbreviations</summary>
+    </key>
+    <key name="group2-show-seconds" type="b">
+      <default>false</default>
+      <summary>Group 2: Show seconds</summary>
+    </key>
+    <key name="group2-show-day-difference" type="b">
+      <default>false</default>
+      <summary>Group 2: Show date difference from system time zone</summary>
+    </key>
+    <key name="group2-use-12-hour" type="b">
+      <default>false</default>
+      <summary>Group 2: Use a twelve hour clock</summary>
+    </key>
+    <key name="group2-text-shadow" type="b">
+      <default>true</default>
+      <summary>Group 2: Show text shadow</summary>
+    </key>
+    <key name="group2-background-mode" type="s">
+      <default>'transparent'</default>
+      <summary>Group 2: Clock group background</summary>
+    </key>
+    <key name="group2-background-color" type="s">
+      <default>'#172a24'</default>
+      <summary>Group 2: Solid background color</summary>
+    </key>
+    <key name="group2-background-image" type="s">
+      <default>''</default>
+      <summary>Group 2: Local background image path</summary>
+    </key>
+    <key name="group3-clocks" type="s">
+      <default>'[{"zone":"UTC","label":"","color":"","showAbbr":true}]'</default>
+      <summary>Group 3: Ordered clock definitions</summary>
+    </key>
+    <key name="group3-font-family" type="s">
+      <default>'Adwaita Sans'</default>
+      <summary>Group 3: Installed font family</summary>
+    </key>
+    <key name="group3-font-size" type="i">
+      <default>26</default>
+      <summary>Group 3: Font size in logical pixels</summary>
+      <range min="14" max="48" />
+    </key>
+    <key name="group3-text-opacity" type="i">
+      <default>100</default>
+      <summary>Group 3: Text opacity percentage</summary>
+      <range min="0" max="100" />
+    </key>
+    <key name="group3-font-color" type="s">
+      <default>'#ffffff'</default>
+      <summary>Group 3: Global font color</summary>
+    </key>
+    <key name="group3-layout" type="s">
+      <default>'classic'</default>
+      <summary>Group 3: Clock layout</summary>
+    </key>
+    <key name="group3-position" type="s">
+      <default>'bottom-left'</default>
+      <summary>Group 3: Desktop corner</summary>
+    </key>
+    <key name="group3-monitor" type="i">
+      <default>-1</default>
+      <summary>Group 3: Monitor index, or minus one for primary</summary>
+      <range min="-1" max="32" />
+    </key>
+    <key name="group3-margin" type="i">
+      <default>24</default>
+      <summary>Group 3: Distance from screen edge</summary>
+      <range min="0" max="200" />
+    </key>
+    <key name="group3-show-abbreviations" type="b">
+      <default>true</default>
+      <summary>Group 3: Enable time zone abbreviations</summary>
+    </key>
+    <key name="group3-show-seconds" type="b">
+      <default>false</default>
+      <summary>Group 3: Show seconds</summary>
+    </key>
+    <key name="group3-show-day-difference" type="b">
+      <default>false</default>
+      <summary>Group 3: Show date difference from system time zone</summary>
+    </key>
+    <key name="group3-use-12-hour" type="b">
+      <default>false</default>
+      <summary>Group 3: Use a twelve hour clock</summary>
+    </key>
+    <key name="group3-text-shadow" type="b">
+      <default>true</default>
+      <summary>Group 3: Show text shadow</summary>
+    </key>
+    <key name="group3-background-mode" type="s">
+      <default>'transparent'</default>
+      <summary>Group 3: Clock group background</summary>
+    </key>
+    <key name="group3-background-color" type="s">
+      <default>'#172a24'</default>
+      <summary>Group 3: Solid background color</summary>
+    </key>
+    <key name="group3-background-image" type="s">
+      <default>''</default>
+      <summary>Group 3: Local background image path</summary>
+    </key>
+    <key name="group4-clocks" type="s">
+      <default>'[{"zone":"UTC","label":"","color":"","showAbbr":true}]'</default>
+      <summary>Group 4: Ordered clock definitions</summary>
+    </key>
+    <key name="group4-font-family" type="s">
+      <default>'Adwaita Sans'</default>
+      <summary>Group 4: Installed font family</summary>
+    </key>
+    <key name="group4-font-size" type="i">
+      <default>26</default>
+      <summary>Group 4: Font size in logical pixels</summary>
+      <range min="14" max="48" />
+    </key>
+    <key name="group4-text-opacity" type="i">
+      <default>100</default>
+      <summary>Group 4: Text opacity percentage</summary>
+      <range min="0" max="100" />
+    </key>
+    <key name="group4-font-color" type="s">
+      <default>'#ffffff'</default>
+      <summary>Group 4: Global font color</summary>
+    </key>
+    <key name="group4-layout" type="s">
+      <default>'classic'</default>
+      <summary>Group 4: Clock layout</summary>
+    </key>
+    <key name="group4-position" type="s">
+      <default>'bottom-right'</default>
+      <summary>Group 4: Desktop corner</summary>
+    </key>
+    <key name="group4-monitor" type="i">
+      <default>-1</default>
+      <summary>Group 4: Monitor index, or minus one for primary</summary>
+      <range min="-1" max="32" />
+    </key>
+    <key name="group4-margin" type="i">
+      <default>24</default>
+      <summary>Group 4: Distance from screen edge</summary>
+      <range min="0" max="200" />
+    </key>
+    <key name="group4-show-abbreviations" type="b">
+      <default>true</default>
+      <summary>Group 4: Enable time zone abbreviations</summary>
+    </key>
+    <key name="group4-show-seconds" type="b">
+      <default>false</default>
+      <summary>Group 4: Show seconds</summary>
+    </key>
+    <key name="group4-show-day-difference" type="b">
+      <default>false</default>
+      <summary>Group 4: Show date difference from system time zone</summary>
+    </key>
+    <key name="group4-use-12-hour" type="b">
+      <default>false</default>
+      <summary>Group 4: Use a twelve hour clock</summary>
+    </key>
+    <key name="group4-text-shadow" type="b">
+      <default>true</default>
+      <summary>Group 4: Show text shadow</summary>
+    </key>
+    <key name="group4-background-mode" type="s">
+      <default>'transparent'</default>
+      <summary>Group 4: Clock group background</summary>
+    </key>
+    <key name="group4-background-color" type="s">
+      <default>'#172a24'</default>
+      <summary>Group 4: Solid background color</summary>
+    </key>
+    <key name="group4-background-image" type="s">
+      <default>''</default>
+      <summary>Group 4: Local background image path</summary>
+    </key>
   </schema>
 </schemalist>
