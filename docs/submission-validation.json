@@ -59,15 +59,14 @@
   "remaining": [
     "GNOME 49 and 51 image tests",
     "Final GNOME 51 release validation",
-    "Upload corrected follow-up archive",
     "GNOME reviewer decision and any requested changes"
   ],
-  "follow_up": "2026-09-12: a corrected 13-file follow-up archive is ready. Three schema/package Shexli findings are resolved. EGO-M-004 remains as a Shexli 0.2.1 false positive for the already-supported Shell 51 major target.",
+  "follow_up": "2026-09-12: GNOME accepted the corrected 13-file archive as Version 2, Review ID 74980, with status Unreviewed. The live report confirms the three schema/package findings are resolved; only the Shell 51 Shexli 0.2.1 analyzer false positive remains.",
   "ego_submission": {
-    "date": "2026-09-09",
+    "date": "2026-09-12",
     "extension_id": 10916,
-    "review_id": 74893,
-    "version": 1,
+    "review_id": 74980,
+    "version": 2,
     "status": "Unreviewed",
     "shell_versions": [
       "49",
@@ -75,7 +74,7 @@
       "51"
     ],
     "extension_url": "https://extensions.gnome.org/extension/10916/desktop-world-clocks/",
-    "review_url": "https://extensions.gnome.org/review/74893",
+    "review_url": "https://extensions.gnome.org/review/74980",
     "screenshot_url": "https://extensions.gnome.org/extension-data/screenshots/screenshot_10916.png"
   },
   "prepared_follow_up": {
@@ -95,6 +94,20 @@
     "shexli_remaining": [
       "EGO-M-004 analyzer false positive for Shell 51"
     ],
-    "status": "Ready to upload"
+    "status": "Submitted as Version 2; Unreviewed",
+    "review_id": 74980
+  },
+  "previous_submission": {
+    "date": "2026-09-09",
+    "extension_id": 10916,
+    "review_id": 74893,
+    "version": 1,
+    "status": "Rejected",
+    "shell_versions": [
+      "49",
+      "50",
+      "51"
+    ],
+    "review_url": "https://extensions.gnome.org/review/74893"
   }
 }
