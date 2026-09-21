@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-12",
+  "date": "2026-09-20",
   "archive_sha256": "b4dab35fd9c23276a3474d4e4f11c403e03156ec15bbc912d7db7e27ff2da86f",
   "runtime_file_sha256": {
     "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
@@ -58,16 +58,15 @@
   ],
   "remaining": [
     "GNOME 49 and 51 image tests",
-    "Final GNOME 51 release validation",
-    "GNOME reviewer decision and any requested changes"
+    "Final GNOME 51 release validation"
   ],
-  "follow_up": "2026-09-12: GNOME accepted the corrected 13-file archive as Version 2, Review ID 74980, with status Unreviewed. The live report confirms the three schema/package findings are resolved; only the Shell 51 Shexli 0.2.1 analyzer false positive remains.",
+  "follow_up": "2026-09-20: GNOME Extensions reviewer JustPerfection approved Version 2, Review ID 74980. The release is Active for GNOME Shell 49, 50, and 51.",
   "ego_submission": {
     "date": "2026-09-12",
     "extension_id": 10916,
     "review_id": 74980,
     "version": 2,
-    "status": "Unreviewed",
+    "status": "Active",
     "shell_versions": [
       "49",
       "50",
@@ -75,7 +74,9 @@
     ],
     "extension_url": "https://extensions.gnome.org/extension/10916/desktop-world-clocks/",
     "review_url": "https://extensions.gnome.org/review/74980",
-    "screenshot_url": "https://extensions.gnome.org/extension-data/screenshots/screenshot_10916.png"
+    "screenshot_url": "https://extensions.gnome.org/extension-data/screenshots/screenshot_10916.png",
+    "approved_date": "2026-09-20",
+    "approved_by": "JustPerfection"
   },
   "prepared_follow_up": {
     "date": "2026-09-12",
@@ -94,8 +95,9 @@
     "shexli_remaining": [
       "EGO-M-004 analyzer false positive for Shell 51"
     ],
-    "status": "Submitted as Version 2; Unreviewed",
-    "review_id": 74980
+    "status": "Approved and Active",
+    "review_id": 74980,
+    "approved_date": "2026-09-20"
   },
   "previous_submission": {
     "date": "2026-09-09",

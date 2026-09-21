@@ -2,16 +2,16 @@
 
 Reviewed against the current [EGO review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and [best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html) on 2026-09-04.
 
-**Status: corrected Version 2 is submitted and awaiting review.** This document records our checks and submission status, not approval by GNOME reviewers.
+**Status: Version 2 was approved and activated on September 20, 2026.** The public release supports GNOME Shell 49, 50, and 51.
 
-## Remaining steps
+## Release record
 
 1. **Maintainer review — complete.** The owner reviewed the final runtime source in four blocks, confirmed that they understand it and can maintain the JavaScript, and manually removed the three AI-notice comment lines from all ten runtime JavaScript files. No build step stripped or concealed them.
 2. **Public support access — complete.** The metadata URL points to the public GitHub repository, with Issues enabled. A final Gitleaks 8.30.1 scan found no secrets across all 19 commits before visibility changed.
 3. **Version validation.** Version 1 was submitted with the requested 49/50/51 targets. GNOME 50.4 passed the full isolated automated suite; GNOME 49.9 and 51.beta passed the core suite in containers, excluding images/screenshots due to nested decoder sandbox restrictions. Complete the remaining 49 and 51 checks when those environments are available and upload a follow-up if they expose a compatibility issue.
 4. **Desktop acceptance.** Clock controls, backgrounds, group independence, lock/unlock, suspend/resume, Overview, full-screen behavior, display scaling, time-status controls, and settings persistence across login have passed on the owner's physical GNOME desktop. A short whole-Shell enabled/disabled observation found no measurable incremental CPU cost and about 1.8 MiB of memory difference after re-enabling the current eight-clock configuration. The available system has one monitor, so a multi-monitor arrangement was not available for physical testing. These are release-quality observations, not a claim that EGO tests every behavior or a precise per-extension resource benchmark.
 5. **Initial submission — complete.** The validated 14-file ZIP was uploaded on 2026-09-09. GNOME assigned Extension ID 10916, Review ID 74893, and Version 1 for Shell 49, 50, and 51. The approved four-group desktop image is published as the extension screenshot.
-6. **Automated-review correction — submitted.** The 13-file follow-up archive omits the locally compiled schema and replaces pathless child schemas with one correctly named fixed-path schema. GNOME accepted it as Version 2 on 2026-09-12 under Review ID 74980. Shexli no longer reports EGO-P-002, EGO-P-004, or EGO-P-006. Its only remaining result is EGO-M-004, a known analyzer limitation: Shexli 0.2.1 treats every major above 50 as future, while GNOME’s current metadata guide requires major-only values and the live catalog already has active Shell 51 versions. Version 2 remains Unreviewed.
+6. **Automated-review correction — submitted.** The 13-file follow-up archive omits the locally compiled schema and replaces pathless child schemas with one correctly named fixed-path schema. GNOME accepted it as Version 2 on 2026-09-12 under Review ID 74980. Shexli no longer reports EGO-P-002, EGO-P-004, or EGO-P-006. Its only remaining result is EGO-M-004, a known analyzer limitation: Shexli 0.2.1 treats every major above 50 as future, while GNOME’s current metadata guide requires major-only values and the live catalog already has active Shell 51 versions. Version 2 was approved by GNOME Extensions reviewer JustPerfection on 2026-09-20 and is now Active.
 
 ## Rule-to-evidence review
 

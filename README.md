@@ -2,7 +2,7 @@
 
 Up to four independent groups of world clocks directly on the GNOME desktop, above the wallpaper and below application windows. Each group supports up to ten clocks (40 total).
 
-**Development build. Targets GNOME Shell 49, 50, and 51.** Version declarations are in `metadata.json`; runtime testing is recorded separately:
+**[Install Desktop World Clocks from the GNOME Extensions website](https://extensions.gnome.org/extension/10916/desktop-world-clocks/).** The approved release supports GNOME Shell 49, 50, and 51. Runtime testing is recorded separately:
 
 | GNOME Shell | Compatibility status |
 | --- | --- |
@@ -61,9 +61,15 @@ These resource controls and the measured observations recorded in the [developme
 
 ![Native preferences](docs/preferences.png)
 
-## Build and install
+## Installation
 
-Requires GNOME Shell 49–51, GJS, GTK 4.20 or later, libadwaita 1.8 or later, GLib, the system `tzdata` package with `/usr/share/zoneinfo/tzdata.zi`, and the GNOME Extensions command-line tool. Packaging additionally requires Python 3 and `glib-compile-schemas`. Normal GNOME installations supply the runtime libraries; Node.js is only used for development linting.
+Install the approved release from the **[GNOME Extensions website](https://extensions.gnome.org/extension/10916/desktop-world-clocks/)**, then open the extension preferences in the GNOME Extensions app to add clocks and choose their appearance.
+
+Desktop World Clocks requires GNOME Shell 49–51. Normal GNOME installations provide the required runtime libraries and time-zone data.
+
+### Manual installation from source
+
+Building from this repository additionally requires GJS, GTK 4.20 or later, libadwaita 1.8 or later, GLib, the system `tzdata` package with `/usr/share/zoneinfo/tzdata.zi`, the GNOME Extensions command-line tool, Python 3, and `glib-compile-schemas`. Node.js is used only for development linting.
 
 From this repository:
 
@@ -103,7 +109,7 @@ npm run pack
 
 The Shell test creates a disposable software-rendered Wayland session with separate settings and data directories; it does not install into or alter the active desktop. See [development notes](docs/DEVELOPMENT.md) for test requirements and scope.
 
-The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. The maintainer reviewed the runtime source, confirmed that they understand it, and accepted responsibility for maintaining it. The extension has not yet been reviewed or approved by extensions.gnome.org.
+The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. The maintainer reviewed the runtime source, confirmed that they understand it, and accepted responsibility for maintaining it. Version 2 was approved by the GNOME Extensions review team on September 20, 2026, and is available from the [official extension listing](https://extensions.gnome.org/extension/10916/desktop-world-clocks/).
 
 The approved browser concept remains in [design/preview.html](design/preview.html); its time-source controls are historical mockups. The actual extension uses the existing system service as selected during implementation. See [design decisions](design/DESIGN.md).
 
