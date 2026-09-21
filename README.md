@@ -1,8 +1,26 @@
 # Desktop World Clocks
 
-Up to four independent groups of world clocks directly on the GNOME desktop, above the wallpaper and below application windows. Each group supports up to ten clocks (40 total).
+**Keep the times that matter visible on your GNOME desktop.**
 
-**[Install Desktop World Clocks from the GNOME Extensions website](https://extensions.gnome.org/extension/10916/desktop-world-clocks/).** The approved release supports GNOME Shell 49, 50, and 51. Runtime testing is recorded separately:
+Desktop World Clocks is for people who coordinate with teams, customers, friends, or family across time zones and want to avoid repeatedly opening another application or doing mental time-zone arithmetic. It places world clocks directly on the desktop, above the wallpaper and below application windows.
+
+Create one compact group or arrange up to four independent groups across desktop corners and monitors. Each group can contain ten clocks, for a total of 40, with its own time zones, labels, layout, typography, colors, opacity, time format, and background.
+
+**[Install Desktop World Clocks from the GNOME Extensions website](https://extensions.gnome.org/extension/10916/desktop-world-clocks/).** The approved release supports GNOME Shell 49, 50, and 51.
+
+[![Desktop World Clocks demonstration](marketing/assets/desktop-world-clocks-demo.webp)](marketing/assets/desktop-world-clocks-demo.mp4)
+
+*Watch the [MP4 demonstration](marketing/assets/desktop-world-clocks-demo.mp4) or view the [full desktop screenshot](docs/desktop-four-groups.png).*
+
+## Design philosophy
+
+Desktop World Clocks is designed to provide a calm, always-visible view of global time without becoming another application to manage. The clocks stay beneath application windows, do not capture clicks, and can be as minimal as a transparent list or as detailed as four separately styled groups.
+
+The extension follows the desktop instead of working around it. Time zones come from the installed system database, fonts come from GNOME, configuration uses native GTK and libadwaita controls, and every clock reads the existing system time and synchronization service.
+
+Privacy and efficiency are part of the design. One shared timer updates only when needed and pauses during Overview, suspend, and full-screen use. The extension makes no network requests, collects no telemetry, performs no separate time synchronization, and starts no helper process or permanent background service. Settings and managed background images stay in the user’s account.
+
+## Compatibility
 
 | GNOME Shell | Compatibility status |
 | --- | --- |
@@ -11,18 +29,6 @@ Up to four independent groups of world clocks directly on the GNOME desktop, abo
 | 51 | Core suite passed on **51.beta** in an isolated Fedora development container; image, physical-session, and final-release checks pending |
 
 The core suite exercises real Shell and native preferences, including layouts, timers, colors, clock editing, and cleanup. Container image tests are excluded because the nested image-decoder sandbox cannot run under this host’s container restrictions. Full compatibility is not yet verified on GNOME 49 and 51. See [validation and remaining checks](docs/DEVELOPMENT.md).
-
-## Goal and design philosophy
-
-Desktop World Clocks gives people who coordinate across locations a calm, always-visible view of the times that matter to them. Its goal is to reduce the mental work of converting time zones and the interruption of opening another application. Clocks live directly on the desktop and can appear as one focused group or as independent groups arranged across corners and monitors.
-
-The extension is designed to feel like a natural part of the GNOME desktop. Clocks remain beneath application windows, do not capture clicks, and respect each user’s choices for typography, color, spacing, alignment, and background. The layouts adapt to available space so the display remains useful and legible without overwhelming the desktop.
-
-System integration, privacy, and efficiency guide the implementation. Time zones come from the installed system database, fonts come from GNOME, and every clock uses the existing system time and synchronization service. Configuration uses native GTK and libadwaita controls. One shared timer updates only when needed and pauses during Overview, suspend, and full-screen use. The extension performs no network requests, telemetry, or separate time synchronization, and it starts no helper process or permanent background service. Settings and managed background images remain local to the user’s account.
-
-![Native desktop clocks — close-up with text shadow disabled](docs/desktop-detail.png)
-
-Native desktop detail, shown with text shadow disabled for clarity. [View the full desktop screenshot](docs/desktop.png).
 
 ## Features
 
