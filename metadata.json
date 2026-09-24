@@ -1,7 +1,7 @@
 {
   "uuid": "desktop-world-clocks@infamous-pattern.github.io",
   "name": "Desktop World Clocks",
-  "description": "Up to four independent desktop clock groups, with ten world clocks per group. Customize each group’s corner, monitor, fonts, colors, opacity, layout, and background. Uses the system clock and its existing time synchronization service.",
+  "description": "Keep the times that matter visible on your GNOME desktop.\n\nDesktop World Clocks places customizable, click-through world clocks above your wallpaper and below application windows. Check the local time for teammates, customers, friends, or family without opening another application or calculating time-zone differences.\n\n* Create up to four independent groups with ten clocks each\n* Choose any installed time zone and customize names, fonts, colors, opacity, layouts, corners, monitors, and backgrounds\n* Use 12- or 24-hour time, optional seconds, date differences, and per-clock colors or abbreviations\n* Uses your existing system clock and time synchronization service\n* Makes no network requests and collects no telemetry\n\nSupports GNOME Shell 49, 50, and 51.",
   "shell-version": [
     "49",
     "50",

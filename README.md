@@ -1,5 +1,9 @@
 # Desktop World Clocks
 
+<p align="center">
+  <img src="marketing/assets/desktop-world-clocks-icon.png" alt="Desktop World Clocks icon" width="160">
+</p>
+
 **Keep the times that matter visible on your GNOME desktop.**
 
 Desktop World Clocks is for people who coordinate with teams, customers, friends, or family across time zones and want to avoid repeatedly opening another application or doing mental time-zone arithmetic. It places world clocks directly on the desktop, above the wallpaper and below application windows.
@@ -118,6 +122,12 @@ The Shell test creates a disposable software-rendered Wayland session with separ
 The implementation follows the [GNOME Extension Developer Guide](https://gjs.guide/extensions/), including synchronous lifecycle cleanup, separate Shell and GTK processes, modern ES modules, GSettings, cancellable preferences I/O, and a runtime-only distribution. The maintainer reviewed the runtime source, confirmed that they understand it, and accepted responsibility for maintaining it. Version 2 was approved by the GNOME Extensions review team on September 20, 2026, and is available from the [official extension listing](https://extensions.gnome.org/extension/10916/desktop-world-clocks/).
 
 The approved browser concept remains in [design/preview.html](design/preview.html); its time-source controls are historical mockups. The actual extension uses the existing system service as selected during implementation. See [design decisions](design/DESIGN.md).
+
+## Support
+
+If Desktop World Clocks makes coordinating across time zones easier, you can [buy me a coffee](https://buymeacoffee.com/infamouspattern) to support its continued development.
+
+<a href="https://buymeacoffee.com/infamouspattern"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" width="218" height="61"></a>
 
 ## Credits
 
